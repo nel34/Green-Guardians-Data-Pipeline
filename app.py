@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 import plotly.graph_objects as go
 
 @st.cache_data
@@ -19,7 +18,13 @@ df['YEAR'] = df['YEAR'].astype(int)
 st.title("Couverture moyenne de la phanérogame marine (seagrass)")
 
 # Filtrer pour les années d'intérêt
-years_interest = [2021, 2022, 2023]
+years_available = sorted(df['YEAR'].unique())
+years_interest = st.multiselect("Sélectionnez les années d'intérêt :", years_available, default=years_available[:5])
+
+if not years_interest:
+    st.warning("Aucune année sélectionnée. Veuillez sélectionner au moins une année pour afficher les données.")
+    st.stop()  # Arrête l'exécution si aucune année sélectionnée
+
 df_filtered = df[df['YEAR'].isin(years_interest)]
 
 # S'assurer que SEAGRASS_COVER est bien numérique
@@ -35,7 +40,6 @@ for year in years_interest:
 
 # Création du graphique interactif avec Plotly
 fig = go.Figure()
-
 for (year, mean, std_err, n) in stats:
     fig.add_trace(go.Bar(
         x=[str(year)],
@@ -47,7 +51,6 @@ for (year, mean, std_err, n) in stats:
         marker_color='gray',
         opacity=0.8
     ))
-
 fig.update_layout(
     title="Overall Seagrass Cover",
     xaxis_title="YEAR",
@@ -57,10 +60,11 @@ fig.update_layout(
     showlegend=False,
     height=600
 )
-
 st.plotly_chart(fig)
 
-# Affichage du tableau récapitulatif
+# Affichage du tableau récapitulatif SANS index
 st.write("**Statistiques récapitulatives :**")
 result_table = pd.DataFrame(stats, columns=['Année', 'Moyenne (%)', "Erreur standard", "n"])
-st.dataframe(result_table)
+result_table['Année'] = result_table['Année'].astype(str)  # éviter la virgule
+st.dataframe(result_table.reset_index(drop=True))  # masquer la colonne d'index
+st.write("**Source des données :** TRANSECT_DATA_SUMMARY.xlsx, feuille TRANSECT DATA SUMMARY")

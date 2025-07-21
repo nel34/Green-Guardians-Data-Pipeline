@@ -30,3 +30,4 @@ build/
 .DS_Store
 Thumbs.db
 TRANSECT_DATA_SUMMARY.xlsx
+~$TRANSECT_DATA_SUMMARY.xlsx
