@@ -15,7 +15,7 @@ def main():
     df = df.dropna(subset=['YEAR'])
     df['YEAR'] = df['YEAR'].astype(int)
 
-    st.title("🌿 Couverture moyenne de la phanérogame marine (seagrass)")
+    st.title("🌿 Couverture moyenne des herbiers marins (seagrass)")
 
     years_available = sorted(df['YEAR'].unique())
     years_interest = st.multiselect("Sélectionnez les années d'intérêt :", years_available, default=years_available[:5])
@@ -35,13 +35,16 @@ def main():
         stats.append((year, mean, std_err, len(covers)))
 
     fig = go.Figure()
+    def format_float(val):
+        return f"{val:.2f}".rstrip('0').rstrip('.') if not np.isnan(val) else ""
+
     for (year, mean, std_err, n) in stats:
         fig.add_trace(go.Bar(
             x=[str(year)],
             y=[mean],
             name=str(year),
             error_y=dict(type='data', array=[std_err], visible=True),
-            text=[f"{mean:.2f} ± {std_err:.2f}"],
+            text=[f"{format_float(mean)} ± {format_float(std_err)}"],
             textposition='outside',
             marker_color='gray',
             opacity=0.8
@@ -51,7 +54,10 @@ def main():
         title="Overall Seagrass Cover",
         xaxis_title="YEAR",
         yaxis_title="% Cover",
-        yaxis=dict(range=[0, max([x[1] + (x[2] if not np.isnan(x[2]) else 0) + 5 for x in stats])]),
+        yaxis=dict(
+            range=[0, max([x[1] + (x[2] if not np.isnan(x[2]) else 0) + 5 for x in stats])],
+            tickformat=".2~f"  # format sans les zéros inutiles
+        ),
         bargap=0.5,
         showlegend=False,
         height=600
@@ -59,6 +65,8 @@ def main():
 
     result_table = pd.DataFrame(stats, columns=['Année', 'Moyenne (%)', "Erreur standard", "n"])
     result_table['Année'] = result_table['Année'].astype(str)
+    result_table['Moyenne (%)'] = result_table['Moyenne (%)'].apply(format_float)
+    result_table['Erreur standard'] = result_table['Erreur standard'].apply(format_float)
 
     col1, col2 = st.columns([2, 1])
 

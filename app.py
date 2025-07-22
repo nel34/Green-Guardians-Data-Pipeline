@@ -1,6 +1,5 @@
 import streamlit as st
 import seagrass_cover
-import testgrass
 import seagrass_cover_zones
 
 st.set_page_config(page_title="Green Guardian", page_icon="🌱", layout="wide")
@@ -36,13 +35,9 @@ if st.sidebar.button("🌿 Seagrass Cover", key="seagrass"):
     st.session_state.page = "seagrass"
 if st.sidebar.button("🌱 Seagrass Cover Zones", key="seagrass_cover_zones"):
     st.session_state.page = "seagrass_cover_zones"
-if st.sidebar.button("🌾 Testgrass", key="testgrass"):
-    st.session_state.page = "testgrass"
 
 # Affichage dynamique du contenu selon le bouton
 if st.session_state.page == "seagrass":
     seagrass_cover.main()
 elif st.session_state.page == "seagrass_cover_zones":
-    seagrass_cover_zones.main()  # Ajoute cet appel
-elif st.session_state.page == "testgrass":
-    testgrass.main()
+    seagrass_cover_zones.main()
