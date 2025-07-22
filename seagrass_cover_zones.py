@@ -52,15 +52,16 @@ def main():
         zone_stats,
         x='ZONE', y='moyenne',
         error_y='erreur_std',
-        text='moyenne',
+        text=zone_stats['moyenne'].round(2),  # format texte
         labels={"moyenne": "Richesse spécifique moyenne", "ZONE": "Zone"},
         title='Richesse spécifique par zone'
     )
+    fig_zone.update_yaxes(tickformat=".2f")  # format axe Y
     col1, col2 = st.columns([2, 1])
     with col1:
         st.plotly_chart(fig_zone, use_container_width=True)
     with col2:
-        st.dataframe(zone_stats)
+        st.dataframe(zone_stats.round(2))
 
     # 2. Graphique par MOIS (toutes zones ou par zone)
     st.subheader("Richesse spécifique par mois")
@@ -76,6 +77,7 @@ def main():
             labels={"moyenne": "Richesse spécifique", "MONTH": "Mois"},
             title="Évolution mensuelle par zone"
         )
+        fig_mois.update_yaxes(tickformat=".2f")
     else:
         mois_stats = df_filtrée.groupby('MONTH').agg(
             moyenne=('SP_RICHNESS', 'mean'),
@@ -87,11 +89,12 @@ def main():
             labels={"moyenne": "Richesse spécifique", "MONTH": "Mois"},
             title="Évolution mensuelle toutes zones confondues"
         )
+        fig_mois.update_yaxes(tickformat=".2f")
     col1, col2 = st.columns([2, 1])
     with col1:
         st.plotly_chart(fig_mois, use_container_width=True)
     with col2:
-        st.dataframe(mois_stats)
+        st.dataframe(mois_stats.round(2))
 
     # 3. Graphique global (tous filtres)
     st.subheader("Richesse spécifique globale (tous filtres appliqués)")
