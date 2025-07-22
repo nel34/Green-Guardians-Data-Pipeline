@@ -57,10 +57,18 @@ def main():
         height=600
     )
 
-    st.plotly_chart(fig)
-
     result_table = pd.DataFrame(stats, columns=['Année', 'Moyenne (%)', "Erreur standard", "n"])
     result_table['Année'] = result_table['Année'].astype(str)
-    st.write("**Statistiques récapitulatives :**")
-    st.dataframe(result_table.reset_index(drop=True))
-    st.write("**Source des données :** TRANSECT_DATA_SUMMARY.xlsx, feuille TRANSECT DATA SUMMARY")
+
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        st.plotly_chart(fig)
+        st.write("**Source des données :** TRANSECT_DATA_SUMMARY.xlsx, feuille TRANSECT DATA SUMMARY")
+
+    with col2:
+        st.write("**Statistiques récapitulatives :**")
+        st.dataframe(result_table.reset_index(drop=True))
+
+if __name__ == "__main__":
+    main()
