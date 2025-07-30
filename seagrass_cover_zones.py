@@ -111,14 +111,37 @@ def main():
                     title="Évolution mensuelle toutes zones confondues"
                 )
             fig_mois.update_yaxes(tickformat=".2f")
-            c3, c4 = st.columns([2,1])
+            c3, c4 = st.columns([3,2])
             with c3:
                 st.plotly_chart(fig_mois, use_container_width=True)
             with c4:
                 mois_stats_fmt = mois_stats.copy()
                 mois_stats_fmt['moyenne'] = mois_stats_fmt['moyenne'].apply(format_float)
                 mois_stats_fmt['erreur_std'] = mois_stats_fmt['erreur_std'].apply(format_float)
-                st.dataframe(mois_stats_fmt.round(2))
+
+                # Nouveau graphique à barres stylisé pour remplacer le tableau
+                fig_bar = px.bar(
+                    mois_stats,
+                    x='MONTH',
+                    y='moyenne',
+                    error_y='erreur_std',
+                    text=mois_stats['moyenne'].apply(format_float),
+                    labels={"moyenne": "Richesse spécifique moyenne", "MONTH": "Mois"},
+                    title="Richesse spécifique moyenne par mois",
+                    color='moyenne',
+                    color_continuous_scale='Viridis'
+                )
+                fig_bar.update_traces(marker_line_color='black', marker_line_width=1.5, textposition='outside')
+                fig_bar.update_layout(
+                    yaxis=dict(tickformat=".2f"),
+                    xaxis_title="Mois",
+                    yaxis_title="Richesse spécifique moyenne",
+                    plot_bgcolor='rgba(245,245,245,1)',
+                    bargap=0.3,
+                    showlegend=False,
+                    height=400
+                )
+                st.plotly_chart(fig_bar, use_container_width=True)
 
             # Stat globale
             st.subheader("Richesse spécifique globale (tous filtres appliqués)")
