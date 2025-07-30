@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from scipy.stats import linregress
 
 @st.cache_data
 def load_data():
@@ -37,10 +38,11 @@ def main():
         annees_sel = st.multiselect("Années :", annees, default=annees)
 
     # -------- Ajout des onglets pour les graphiques --------
-    tab1, tab2, tab3 = st.tabs([
+    tab1, tab2, tab3, tab4 = st.tabs([
         "Richesse spécifique par zone",
         "Richesse spécifique par mois",
-        "Couverture des herbiers"
+        "Couverture des herbiers",
+        "Corrélation & Régression"
     ])
 
     # -------- Préparation des données filtrées ----------- 
@@ -214,3 +216,57 @@ def main():
                 result_table_fmt['Moyenne (%)'] = result_table_fmt['Moyenne (%)'].apply(format_float)
                 result_table_fmt['Erreur standard'] = result_table_fmt['Erreur standard'].apply(format_float)
                 st.dataframe(result_table_fmt)
+                
+    with tab4:
+        st.header("Corrélation entre richesse spécifique et couverture des herbiers (Fig. 7 & 8)")
+
+        df_corr = df.dropna(subset=['SEAGRASS_COVER', 'SP_RICHNESS']).copy()
+        df_corr['SEAGRASS_COVER'] = pd.to_numeric(df_corr['SEAGRASS_COVER'], errors='coerce')
+        df_corr['SP_RICHNESS'] = pd.to_numeric(df_corr['SP_RICHNESS'], errors='coerce')
+        df_corr['ZONE'] = pd.to_numeric(df_corr['ZONE'], errors='coerce')
+        df_corr['YEAR'] = pd.to_numeric(df_corr['YEAR'], errors='coerce')
+        df_corr['MONTH'] = df_corr['MONTH'].astype(str)
+
+        # Appliquer les filtres dynamiques
+        df_corr_filt = df_corr[
+            df_corr['ZONE'].isin(zone_sel) &
+            df_corr['MONTH'].isin(mois_sel) &
+            df_corr['YEAR'].isin(annees_sel)
+        ]
+
+        if df_corr_filt.empty:
+            st.warning("Aucune donnée disponible pour afficher la corrélation.")
+        else:
+            # Régression linéaire
+
+            x = df_corr_filt['SP_RICHNESS']
+            y = df_corr_filt['SEAGRASS_COVER']
+            slope, intercept, r_value, p_value, std_err = linregress(x, y)
+            r_squared = r_value**2
+
+            fig_corr = px.scatter(
+                df_corr_filt,
+                x='SP_RICHNESS',
+                y='SEAGRASS_COVER',
+                color='ZONE',
+                opacity=0.8,
+                labels={
+                    "SP_RICHNESS": "Richesse spécifique",
+                    "SEAGRASS_COVER": "% Couverture"
+                },
+                title=f"Corrélation entre richesse spécifique et couverture des herbiers<br><sup>Régression linéaire : y = {slope:.2f}x + {intercept:.2f} (R² = {r_squared:.2f})</sup>"
+            )
+
+            fig_corr.update_traces(
+                marker=dict(size=8, line=dict(width=1, color='DarkSlateGrey'))
+            )
+
+
+
+            # Ligne de régression
+            x_vals = np.linspace(x.min(), x.max(), 100)
+            y_vals = slope * x_vals + intercept
+            fig_corr.add_trace(go.Scatter(x=x_vals, y=y_vals, mode='lines', name='Régression', line=dict(color='black', dash='dash')))
+
+            fig_corr.update_layout(height=600)
+            st.plotly_chart(fig_corr, use_container_width=True)
