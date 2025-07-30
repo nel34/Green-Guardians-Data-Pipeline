@@ -68,15 +68,60 @@ def main():
     result_table['Moyenne (%)'] = result_table['Moyenne (%)'].apply(format_float)
     result_table['Erreur standard'] = result_table['Erreur standard'].apply(format_float)
 
-    col1, col2 = st.columns([2, 1])
+    st.plotly_chart(fig, use_container_width=True)
+        
+    st.header("🌾 Couverture moyenne des herbiers par mois (Fig. 4)")
 
-    with col1:
-        st.plotly_chart(fig)
-        st.write("**Source des données :** TRANSECT_DATA_SUMMARY.xlsx, feuille TRANSECT DATA SUMMARY")
+    # Standardise les noms de mois
+    df['MONTH'] = df['MONTH'].astype(str).str.upper()
 
-    with col2:
-        st.write("**Statistiques récapitulatives :**")
-        st.dataframe(result_table.reset_index(drop=True))
+    # Liste des mois disponibles dynamiquement
+    months_available = sorted(df['MONTH'].dropna().unique())
+    months_interest = st.multiselect(
+        "Sélectionnez les mois :", 
+        months_available, 
+        default=months_available  # tous cochés par défaut
+    )
+
+    # Filtrage
+    df_months = df[df['MONTH'].isin(months_interest)].copy()
+    df_months['SEAGRASS_COVER'] = pd.to_numeric(df_months['SEAGRASS_COVER'], errors='coerce')
+    df_months = df_months.dropna(subset=['SEAGRASS_COVER'])
+
+    if df_months.empty:
+        st.warning("Aucune donnée pour les mois sélectionnés.")
+    else:
+        # Calcul des moyennes et erreurs standard
+        month_stats = df_months.groupby('MONTH').agg(
+            moyenne=('SEAGRASS_COVER', 'mean'),
+            erreur_std=('SEAGRASS_COVER', lambda x: x.std(ddof=1) / np.sqrt(len(x)))
+        ).reindex(months_interest).reset_index()
+
+        # Construction du graphique
+        fig_month = go.Figure()
+        for _, row in month_stats.iterrows():
+            fig_month.add_trace(go.Bar(
+                x=[row['MONTH']],
+                y=[row['moyenne']],
+                error_y=dict(type='data', array=[row['erreur_std']], visible=True),
+                text=[f"{row['moyenne']:.2f} ± {row['erreur_std']:.2f}"],
+                textposition='outside',
+                marker_color='teal'
+            ))
+
+        fig_month.update_layout(
+            title="% de couverture moyen par mois",
+            xaxis_title="Mois",
+            yaxis_title="% Couverture",
+            yaxis=dict(range=[0, max(month_stats['moyenne'] + month_stats['erreur_std']) + 5]),
+            bargap=0.5,
+            showlegend=False,
+            height=500
+        )
+
+        st.plotly_chart(fig_month, use_container_width=True)
+
+
 
 if __name__ == "__main__":
     main()
