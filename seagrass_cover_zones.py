@@ -270,3 +270,23 @@ def main():
 
             fig_corr.update_layout(height=600)
             st.plotly_chart(fig_corr, use_container_width=True)
+            
+            with st.expander("ℹ️ Interprétation de la régression linéaire"):
+                st.markdown(f"""
+                **Interprétation de la courbe :**
+
+                - 🔼 **Pente ({slope:.2f})** : pour chaque espèce supplémentaire observée, la couverture des herbiers augmente en moyenne de **{slope:.0f}%**.
+                - ⚓ **Ordonnée à l'origine ({intercept:.2f})** : si aucune espèce n'est présente, le modèle estime une couverture initiale de **{intercept:.0f}%**.
+                - 📈 **R² ({r_squared:.2f})** : environ **{r_squared * 100:.0f}%** de la variation du % de couverture est expliquée par la richesse spécifique.
+
+                ---
+                
+                **Remarques complémentaires :**
+
+                - 🧪 Cette droite est une **modélisation statistique** : elle représente **la tendance générale**, pas chaque cas individuel.
+                - ⚠️ Si les points sont très dispersés autour de la droite, cela signifie qu’**il y a d'autres facteurs** (non inclus ici) qui influencent la couverture.
+                - 🧭 Une relation **positive** entre diversité et couverture est souvent observée en écologie, car une plus grande richesse d'espèces peut refléter un habitat plus stable ou moins perturbé.
+                - 🔍 La forme du nuage de points peut aussi signaler **des zones ou des conditions spécifiques** à explorer davantage.
+
+                """)
+
