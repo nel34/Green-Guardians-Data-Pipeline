@@ -15,13 +15,13 @@ def main():
     df = df.dropna(subset=['YEAR'])
     df['YEAR'] = df['YEAR'].astype(int)
 
-    st.title("🌿 Couverture moyenne des herbiers marins (seagrass)")
+    st.title("🌿 Average Seagrass Cover")
 
     years_available = sorted(df['YEAR'].unique())
-    years_interest = st.multiselect("Sélectionnez les années d'intérêt :", years_available, default=years_available[:5])
+    years_interest = st.multiselect("Select years of interest:", years_available, default=years_available[:5])
 
     if not years_interest:
-        st.warning("Aucune année sélectionnée. Veuillez sélectionner au moins une année pour afficher les données.")
+        st.warning("No year selected. Please select at least one year to display the data.")
         st.stop()
 
     df_filtered = df[df['YEAR'].isin(years_interest)]
@@ -51,80 +51,84 @@ def main():
         ))
 
     fig.update_layout(
-        title="Overall Seagrass Cover",
-        xaxis_title="YEAR",
+        title="Average Seagrass Cover (%)",
+        xaxis_title="Year",
         yaxis_title="% Cover",
         yaxis=dict(
             range=[0, max([x[1] + (x[2] if not np.isnan(x[2]) else 0) + 5 for x in stats])],
-            tickformat=".2~f"  # format sans les zéros inutiles
+            tickformat=".2~f"
         ),
         bargap=0.5,
         showlegend=False,
         height=600
     )
 
-    result_table = pd.DataFrame(stats, columns=['Année', 'Moyenne (%)', "Erreur standard", "n"])
-    result_table['Année'] = result_table['Année'].astype(str)
-    result_table['Moyenne (%)'] = result_table['Moyenne (%)'].apply(format_float)
-    result_table['Erreur standard'] = result_table['Erreur standard'].apply(format_float)
+    result_table = pd.DataFrame(stats, columns=['Year', 'Mean (%)', "Standard Error", "n"])
+    result_table['Year'] = result_table['Year'].astype(str)
+    result_table['Mean (%)'] = result_table['Mean (%)'].apply(format_float)
+    result_table['Standard Error'] = result_table['Standard Error'].apply(format_float)
 
     st.plotly_chart(fig, use_container_width=True)
         
-    st.header("🌾 Couverture moyenne des herbiers par mois (Fig. 4)")
+    st.header("🌾 Average Seagrass Cover by Month (Fig. 4)")
 
-    # Standardise les noms de mois
+    # Standardize month names
     df['MONTH'] = df['MONTH'].astype(str).str.upper()
 
-    # Liste des mois disponibles dynamiquement
-    months_available = sorted(df['MONTH'].dropna().unique())
+    # Define chronological order for months
+    month_order = [
+        "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+        "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+    ]
+
+    # List of available months dynamically, sorted chronologically
+    months_available = [m for m in month_order if m in df['MONTH'].unique()]
     months_interest = st.multiselect(
-        "Sélectionnez les mois :", 
-        months_available, 
-        default=months_available  # tous cochés par défaut
+        "Select months:",
+        months_available,
+        default=months_available
     )
 
+    # Ensure months_interest is in chronological order
+    months_interest = [m for m in month_order if m in months_interest]
+
     # Filtrage
-    df_months = df[
-        (df['MONTH'].isin(months_interest)) &
-        (df['YEAR'].isin(years_interest))
-    ].copy()
+    df_months = df[df['MONTH'].isin(months_interest)].copy()
     df_months['SEAGRASS_COVER'] = pd.to_numeric(df_months['SEAGRASS_COVER'], errors='coerce')
     df_months = df_months.dropna(subset=['SEAGRASS_COVER'])
 
     if df_months.empty:
-        st.warning("Aucune donnée pour les mois sélectionnés.")
+        st.warning("No data for the selected months.")
     else:
-        # Calcul des moyennes et erreurs standard
+        # Calculate means and standard errors
         month_stats = df_months.groupby('MONTH').agg(
-            moyenne=('SEAGRASS_COVER', 'mean'),
-            erreur_std=('SEAGRASS_COVER', lambda x: x.std(ddof=1) / np.sqrt(len(x)))
+            mean=('SEAGRASS_COVER', 'mean'),
+            std_error=('SEAGRASS_COVER', lambda x: x.std(ddof=1) / np.sqrt(len(x)))
         ).reindex(months_interest).reset_index()
 
-        # Construction du graphique
+        # Build the chart
         fig_month = go.Figure()
         for _, row in month_stats.iterrows():
             fig_month.add_trace(go.Bar(
                 x=[row['MONTH']],
-                y=[row['moyenne']],
-                error_y=dict(type='data', array=[row['erreur_std']], visible=True),
-                text=[f"{row['moyenne']:.2f} ± {row['erreur_std']:.2f}"],
+                y=[row['mean']],
+                error_y=dict(type='data', array=[row['std_error']], visible=True),
+                text=[f"{row['mean']:.2f} ± {row['std_error']:.2f}"],
                 textposition='outside',
                 marker_color='teal'
             ))
 
         fig_month.update_layout(
-            title="% de couverture moyen par mois",
-            xaxis_title="Mois",
-            yaxis_title="% Couverture",
-            yaxis=dict(range=[0, max(month_stats['moyenne'] + month_stats['erreur_std']) + 5]),
+            title="Average % Seagrass Cover by Month",
+            xaxis_title="Month",
+            yaxis_title="% Cover",
+            yaxis=dict(range=[0, max(month_stats['mean'] + month_stats['std_error']) + 5]),
             bargap=0.5,
             showlegend=False,
             height=500
         )
 
         st.plotly_chart(fig_month, use_container_width=True)
-
-
 
 if __name__ == "__main__":
     main()
