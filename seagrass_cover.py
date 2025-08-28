@@ -93,7 +93,10 @@ def main():
     months_interest = [m for m in month_order if m in months_interest]
 
     # Filtrage
-    df_months = df[df['MONTH'].isin(months_interest)].copy()
+    df_months = df[
+        (df['MONTH'].isin(months_interest)) &
+        (df['YEAR'].isin(years_interest))
+    ].copy()
     df_months['SEAGRASS_COVER'] = pd.to_numeric(df_months['SEAGRASS_COVER'], errors='coerce')
     df_months = df_months.dropna(subset=['SEAGRASS_COVER'])
 
