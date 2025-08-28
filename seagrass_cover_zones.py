@@ -10,7 +10,7 @@ def load_data():
     return df
 
 def format_float(val):
-    # Affiche 2 décimales sauf si .00, alors affiche entier
+    # Shows 2 decimals except if .00, then shows integer
     if pd.isnull(val):
         return ""
     val_rounded = round(val, 2)
@@ -21,29 +21,29 @@ def format_float(val):
 def main():
     df = load_data()
 
-    # -------- Sélection des filtres (toujours tout en haut) -----------
-    st.title("🌱 Exploration herbiers marins (richesse spécifique & couverture)")
+    # -------- Filter selection (always at the top) -----------
+    st.title("🌱 Seagrass Meadows Exploration (Species Richness & Cover)")
 
-    st.markdown("### Sélection des données")
+    st.markdown("### Data Selection")
     col1, col2, col3 = st.columns(3)
     with col1:
         zones = sorted([z for z in df.dropna(subset=['ZONE'])["ZONE"].unique() if pd.notnull(z)])
-        zone_sel = st.multiselect("Zones :", zones, default=zones)
+        zone_sel = st.multiselect("Zones:", zones, default=zones)
     with col2:
         mois = sorted(df.dropna(subset=['MONTH'])["MONTH"].astype(str).unique())
-        mois_sel = st.multiselect("Mois :", mois, default=mois)
+        mois_sel = st.multiselect("Months:", mois, default=mois)
     with col3:
         annees = sorted(df.dropna(subset=['YEAR'])["YEAR"].astype(int).unique())
-        annees_sel = st.multiselect("Années :", annees, default=annees)
+        annees_sel = st.multiselect("Years:", annees, default=annees)
 
-    # -------- Ajout des onglets pour les graphiques --------
+    # -------- Tabs for figures --------
     tab1, tab2, tab3 = st.tabs([
-        "Richesse spécifique par zone",
-        "Richesse spécifique par mois",
-        "Couverture des herbiers"
+        "Species Richness by Zone",
+        "Species Richness by Month",
+        "Seagrass Cover"
     ])
 
-    # -------- Préparation des données filtrées ----------- 
+    # -------- Prepare filtered data ----------- 
     df_rich = df.dropna(subset=['SP_RICHNESS', 'ZONE', 'MONTH', 'YEAR']).copy()
     df_rich["ZONE"] = pd.to_numeric(df_rich["ZONE"], errors='coerce')
     df_rich["YEAR"] = pd.to_numeric(df_rich["YEAR"], errors='coerce')
@@ -57,58 +57,58 @@ def main():
     ]
 
     if df_rich_filt.empty:
-        st.warning("Aucune donnée de richesse spécifique pour cette sélection.")
+        st.warning("No species richness data for this selection.")
     else:
         with tab1:
-            st.header("Richesse spécifique moyenne par zone")
+            st.header("Average Species Richness by Zone")
             zone_stats = df_rich_filt.groupby('ZONE').agg(
-                moyenne=('SP_RICHNESS', 'mean'),
-                erreur_std=('SP_RICHNESS', lambda x: x.std(ddof=1) / np.sqrt(len(x))),
-                effectif=('SP_RICHNESS', 'count')
+                mean=('SP_RICHNESS', 'mean'),
+                std_error=('SP_RICHNESS', lambda x: x.std(ddof=1) / np.sqrt(len(x))),
+                count=('SP_RICHNESS', 'count')
             ).reset_index()
             fig_zone = px.bar(
                 zone_stats,
-                x='ZONE', y='moyenne',
-                error_y='erreur_std',
-                text=zone_stats['moyenne'].apply(format_float),
-                labels={"moyenne": "Richesse spécifique moyenne", "ZONE": "Zone"},
-                title='Richesse spécifique par zone'
+                x='ZONE', y='mean',
+                error_y='std_error',
+                text=zone_stats['mean'].apply(format_float),
+                labels={"mean": "Average Species Richness", "ZONE": "Zone"},
+                title='Species Richness by Zone'
             )
             fig_zone.update_yaxes(tickformat=".2f")
             c1, c2 = st.columns([2,1])
             with c1:
                 st.plotly_chart(fig_zone, use_container_width=True)
-            # Pour le tableau
+            # For the table
             with c2:
                 zone_stats_fmt = zone_stats.copy()
-                zone_stats_fmt['moyenne'] = zone_stats_fmt['moyenne'].apply(format_float)
-                zone_stats_fmt['erreur_std'] = zone_stats_fmt['erreur_std'].apply(format_float)
+                zone_stats_fmt['mean'] = zone_stats_fmt['mean'].apply(format_float)
+                zone_stats_fmt['std_error'] = zone_stats_fmt['std_error'].apply(format_float)
                 st.dataframe(zone_stats_fmt)
 
         with tab2:
-            st.header("Richesse spécifique par mois")
-            sel_par_zone = st.checkbox("Afficher par zone", value=False, key="sp_month")
+            st.header("Species Richness by Month")
+            sel_par_zone = st.checkbox("Show by zone", value=False, key="sp_month")
             if sel_par_zone:
                 mois_stats = df_rich_filt.groupby(['MONTH', 'ZONE']).agg(
-                    moyenne=('SP_RICHNESS', 'mean'),
-                    erreur_std=('SP_RICHNESS', lambda x: x.std(ddof=1) / np.sqrt(len(x)))
+                    mean=('SP_RICHNESS', 'mean'),
+                    std_error=('SP_RICHNESS', lambda x: x.std(ddof=1) / np.sqrt(len(x)))
                 ).reset_index()
                 fig_mois = px.line(
-                    mois_stats, x='MONTH', y='moyenne', error_y='erreur_std',
+                    mois_stats, x='MONTH', y='mean', error_y='std_error',
                     color='ZONE', markers=True,
-                    labels={"moyenne": "Richesse spécifique", "MONTH": "Mois"},
-                    title="Évolution mensuelle par zone"
+                    labels={"mean": "Species Richness", "MONTH": "Month"},
+                    title="Monthly Evolution by Zone"
                 )
             else:
                 mois_stats = df_rich_filt.groupby('MONTH').agg(
-                    moyenne=('SP_RICHNESS', 'mean'),
-                    erreur_std=('SP_RICHNESS', lambda x: x.std(ddof=1) / np.sqrt(len(x)))
+                    mean=('SP_RICHNESS', 'mean'),
+                    std_error=('SP_RICHNESS', lambda x: x.std(ddof=1) / np.sqrt(len(x)))
                 ).reset_index()
                 fig_mois = px.line(
-                    mois_stats, x='MONTH', y='moyenne', error_y='erreur_std',
+                    mois_stats, x='MONTH', y='mean', error_y='std_error',
                     markers=True,
-                    labels={"moyenne": "Richesse spécifique", "MONTH": "Mois"},
-                    title="Évolution mensuelle toutes zones confondues"
+                    labels={"mean": "Species Richness", "MONTH": "Month"},
+                    title="Monthly Evolution (All Zones)"
                 )
             fig_mois.update_yaxes(tickformat=".2f")
             c3, c4 = st.columns([3,2])
@@ -116,26 +116,26 @@ def main():
                 st.plotly_chart(fig_mois, use_container_width=True)
             with c4:
                 mois_stats_fmt = mois_stats.copy()
-                mois_stats_fmt['moyenne'] = mois_stats_fmt['moyenne'].apply(format_float)
-                mois_stats_fmt['erreur_std'] = mois_stats_fmt['erreur_std'].apply(format_float)
+                mois_stats_fmt['mean'] = mois_stats_fmt['mean'].apply(format_float)
+                mois_stats_fmt['std_error'] = mois_stats_fmt['std_error'].apply(format_float)
 
-                # Nouveau graphique à barres stylisé pour remplacer le tableau
+                # New stylized bar chart to replace the table
                 fig_bar = px.bar(
                     mois_stats,
                     x='MONTH',
-                    y='moyenne',
-                    error_y='erreur_std',
-                    text=mois_stats['moyenne'].apply(format_float),
-                    labels={"moyenne": "Richesse spécifique moyenne", "MONTH": "Mois"},
-                    title="Richesse spécifique moyenne par mois",
-                    color='moyenne',
+                    y='mean',
+                    error_y='std_error',
+                    text=mois_stats['mean'].apply(format_float),
+                    labels={"mean": "Average Species Richness", "MONTH": "Month"},
+                    title="Average Species Richness by Month",
+                    color='mean',
                     color_continuous_scale='Viridis'
                 )
                 fig_bar.update_traces(marker_line_color='black', marker_line_width=1.5, textposition='outside')
                 fig_bar.update_layout(
                     yaxis=dict(tickformat=".2f"),
-                    xaxis_title="Mois",
-                    yaxis_title="Richesse spécifique moyenne",
+                    xaxis_title="Month",
+                    yaxis_title="Average Species Richness",
                     plot_bgcolor='rgba(245,245,245,1)',
                     bargap=0.3,
                     showlegend=False,
@@ -143,20 +143,20 @@ def main():
                 )
                 st.plotly_chart(fig_bar, use_container_width=True)
 
-            # Stat globale
-            st.subheader("Richesse spécifique globale (tous filtres appliqués)")
+            # Global stat
+            st.subheader("Global Species Richness (all filters applied)")
             global_stats = df_rich_filt["SP_RICHNESS"].agg(['mean', 'std', 'count'])
             global_mean = global_stats['mean']
             global_stderr = global_stats['std'] / np.sqrt(global_stats['count']) if global_stats['count'] > 0 else np.nan
-            st.write(f"**Richesse spécifique moyenne globale :** {global_mean:.2f} ± {global_stderr:.2f} (n={global_stats['count']})")
+            st.write(f"**Global average species richness:** {global_mean:.2f} ± {global_stderr:.2f} (n={global_stats['count']})")
 
             # Export
             csv = df_rich_filt.to_csv(index=False).encode('utf-8')
-            st.download_button(label="Télécharger les données filtrées (CSV)", data=csv, file_name='richesse_specific_filtrée.csv', mime='text/csv')
+            st.download_button(label="Download filtered data (CSV)", data=csv, file_name='filtered_species_richness.csv', mime='text/csv')
 
-    # --------- Couverture des herbiers ----------- 
+    # --------- Seagrass cover ----------- 
     with tab3:
-        st.header("Comparaison de la couverture des herbiers")
+        st.header("Seagrass Cover Comparison")
         df_cov = df.copy()
         df_cov['ZONE'] = pd.to_numeric(df_cov['ZONE'], errors='coerce')
         df_cov['SEAGRASS_COVER'] = pd.to_numeric(df_cov['SEAGRASS_COVER'], errors='coerce')
@@ -170,7 +170,7 @@ def main():
         ]
 
         if df_cov_filt.empty:
-            st.warning("Aucune donnée de couverture pour cette sélection.")
+            st.warning("No cover data for this selection.")
         else:
             stats = []
             for zone in sorted(df_cov_filt['ZONE'].unique()):
@@ -197,9 +197,9 @@ def main():
             else:
                 ymax = 100
             fig.update_layout(
-                title=f"Comparaison de la couverture des herbiers par zone ({', '.join(mois_sel)} - {', '.join([str(y) for y in annees_sel])})",
+                title=f"Seagrass Cover Comparison by Zone ({', '.join(mois_sel)} - {', '.join([str(y) for y in annees_sel])})",
                 xaxis_title="Zone",
-                yaxis_title="% Couverture",
+                yaxis_title="% Cover",
                 yaxis=dict(range=[0, ymax]),
                 bargap=0.5,
                 showlegend=False,
@@ -209,8 +209,8 @@ def main():
             with c5:
                 st.plotly_chart(fig, use_container_width=True)
             with c6:
-                result_table = pd.DataFrame(stats, columns=['Zone', 'Moyenne (%)', "Erreur standard"])
+                result_table = pd.DataFrame(stats, columns=['Zone', 'Mean (%)', "Standard Error"])
                 result_table_fmt = result_table.copy()
-                result_table_fmt['Moyenne (%)'] = result_table_fmt['Moyenne (%)'].apply(format_float)
-                result_table_fmt['Erreur standard'] = result_table_fmt['Erreur standard'].apply(format_float)
+                result_table_fmt['Mean (%)'] = result_table_fmt['Mean (%)'].apply(format_float)
+                result_table_fmt['Standard Error'] = result_table_fmt['Standard Error'].apply(format_float)
                 st.dataframe(result_table_fmt)
