@@ -75,6 +75,9 @@ def main():
             df_unique.groupby(["YEAR","MONTH"], as_index=False)["SURFACE SEAGRASS MAPPING"].sum()
         )
 
+        # Ensure YEAR is shown without thousand separators (as plain string)
+        surf_month["YEAR"] = surf_month["YEAR"].astype(int).astype(str)
+
         # Sort by chronological month order within year
         surf_month["MONTH"] = pd.Categorical(surf_month["MONTH"], categories=months_order, ordered=True)
         surf_month = surf_month.sort_values(["YEAR","MONTH"])
@@ -115,6 +118,8 @@ def main():
         cy_month = (
             df_cy_u.groupby(["YEAR","MONTH"], as_index=False)["CYANOBACTERIA EVIDENCE"].sum()
         )
+        # Ensure YEAR is shown without thousand separators
+        cy_month["YEAR"] = cy_month["YEAR"].astype(int).astype(str)
         cy_month["MONTH"] = pd.Categorical(cy_month["MONTH"], categories=months_order, ordered=True)
         cy_month = cy_month.sort_values(["YEAR","MONTH"])
 
@@ -150,6 +155,8 @@ def main():
         dug_month = (
             df_dug_u.groupby(["YEAR","MONTH"], as_index=False)["DUGONG FEEDING EVIDENCE MAPPING"].sum()
         )
+        # Ensure YEAR is shown without thousand separators
+        dug_month["YEAR"] = dug_month["YEAR"].astype(int).astype(str)
         dug_month["MONTH"] = pd.Categorical(dug_month["MONTH"], categories=months_order, ordered=True)
         dug_month = dug_month.sort_values(["YEAR","MONTH"])
 
