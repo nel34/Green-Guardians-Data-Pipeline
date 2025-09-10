@@ -1,48 +1,32 @@
 import streamlit as st
 import seagrass_cover
 import seagrass_cover_zones
-import dugong_grazing  # <-- ajout
+import dugong_grazing
+import drone_mapping
 
 st.set_page_config(page_title="Green Guardian", page_icon="🌱", layout="wide")
 
 if 'page' not in st.session_state:
     st.session_state.page = "seagrass"
 
-# Sidebar stylisée
-st.sidebar.markdown("""
-<style>
-button.sidebar-button {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 18px;
-    text-align: left;
-    padding: 10px 5px;
-    width: 100%;
-    cursor: pointer;
-}
+st.sidebar.title("Navigation")
+page = st.sidebar.radio(
+    "Go to",
+    ["Seagrass Cover", "Zones & Richness", "Dugong Grazing", "Drone Mapping"],
+    index=["Seagrass Cover", "Zones & Richness", "Dugong Grazing", "Drone Mapping"].index(
+        st.session_state.get("page_title", "Seagrass Cover")
+    )
+)
 
-button.sidebar-button:hover {
-    background-color: #444;
-    font-weight: bold;
-}
-</style>
-
-<h1 style="margin-bottom: 20px; font-size: 28px;">📌 Navigation</h1>
-""", unsafe_allow_html=True)
-
-# Boutons de navigation
-if st.sidebar.button("🌿 Seagrass Cover", key="seagrass"):
-    st.session_state.page = "seagrass"
-if st.sidebar.button("🌱 Seagrass Cover Zones", key="seagrass_cover_zones"):
-    st.session_state.page = "seagrass_cover_zones"
-if st.sidebar.button("🐾 Dugong – Pâturage", key="dugong_grazing"):  # <-- ajout
-    st.session_state.page = "dugong_grazing"
-
-# Affichage dynamique du contenu selon le bouton
-if st.session_state.page == "seagrass":
+if page == "Seagrass Cover":
+    st.session_state.page_title = "Seagrass Cover"
     seagrass_cover.main()
-elif st.session_state.page == "seagrass_cover_zones":
+elif page == "Zones & Richness":
+    st.session_state.page_title = "Zones & Richness"
     seagrass_cover_zones.main()
-elif st.session_state.page == "dugong_grazing":  # <-- ajout
+elif page == "Dugong Grazing":
+    st.session_state.page_title = "Dugong Grazing"
     dugong_grazing.main()
+else:
+    st.session_state.page_title = "Drone Mapping"
+    drone_mapping.main()
