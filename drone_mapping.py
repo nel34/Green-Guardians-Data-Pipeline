@@ -57,28 +57,50 @@ def main():
     df_filt = df[df["YEAR"].isin(years_sel) & df["MONTH"].isin(months_sel)].copy()
 
     # -----------------------------
-    # Seagrass mapped surface chart
+    # Seagrass mapped surface chart (no UI controls)
     # -----------------------------
     st.subheader("Seagrass mapped surface")
-    st.caption("Each month is counted once even if multiple rows repeat the same surface. If multiple unique surfaces exist for the same month across sites/zones, they are summed.")
 
-    df_surf = df_filt.dropna(subset=["SURFACE SEAGRASS MAPPING"]).copy()
+    df_surf = df_filt.copy()
+    df_surf["SURFACE SEAGRASS MAPPING"] = pd.to_numeric(df_surf["SURFACE SEAGRASS MAPPING"], errors="coerce")
+    df_surf = df_surf.dropna(subset=["SURFACE SEAGRASS MAPPING"])
+
     if df_surf.empty:
         st.info("No seagrass mapping data available for the current selection.")
     else:
-        # Deduplicate repeated surfaces within the same Year/Month/Site/Zone
-        subset_keys = [k for k in ["YEAR","MONTH","SITE","ZONE","SURFACE SEAGRASS MAPPING"] if k in df_surf.columns]
-        df_unique = df_surf.drop_duplicates(subset=subset_keys)
+        # Fixed parameters (no UI)
+        min_keep = 0.0
+        agg_choice = "max"  # other options: last_non_null, first_non_null, mode
 
-        # Aggregate per Year-Month (sum unique surfaces across sites/zones for that month)
+        if min_keep > 0:
+            df_surf = df_surf[df_surf["SURFACE SEAGRASS MAPPING"] >= min_keep]
+
+        df_surf = df_surf.sort_index()
+
+        def pick_month_value(g):
+            vals = g["SURFACE SEAGRASS MAPPING"].dropna().astype(float).values
+            if len(vals) == 0:
+                return np.nan
+            if agg_choice == "max":
+                return float(np.max(vals))
+            if agg_choice == "first_non_null":
+                return float(vals)
+            if agg_choice == "last_non_null":
+                return float(vals[-1])
+            if agg_choice == "mode":
+                v, c = np.unique(vals, return_counts=True)
+                return float(v[np.argmax(c)])
+            return float(np.max(vals))
+
         surf_month = (
-            df_unique.groupby(["YEAR","MONTH"], as_index=False)["SURFACE SEAGRASS MAPPING"].sum()
+            df_surf.groupby(["YEAR","MONTH"], as_index=False)
+                .apply(pick_month_value)
+                .rename(columns={None: "SURFACE SEAGRASS MAPPING"})
         )
 
-        # Ensure YEAR is shown without thousand separators (as plain string)
         surf_month["YEAR"] = surf_month["YEAR"].astype(int).astype(str)
-
-        # Sort by chronological month order within year
+        months_order = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE",
+                        "JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
         surf_month["MONTH"] = pd.Categorical(surf_month["MONTH"], categories=months_order, ordered=True)
         surf_month = surf_month.sort_values(["YEAR","MONTH"])
 
@@ -88,22 +110,20 @@ def main():
             y="SURFACE SEAGRASS MAPPING",
             color="YEAR",
             barmode="group",
-            labels={
-                "MONTH": "Month",
-                "SURFACE SEAGRASS MAPPING": "Mapped surface (units)",
-                "YEAR": "Year"
-            },
+            labels={"MONTH": "Month", "SURFACE SEAGRASS MAPPING": "Mapped surface (units)", "YEAR": "Year"},
             title="Mapped Seagrass Surface by Month and Year",
-            text=surf_month["SURFACE SEAGRASS MAPPING"].apply(format_float)
+            text=surf_month["SURFACE SEAGRASS MAPPING"].map(lambda v: "" if pd.isna(v) else f"{v:.2f}".rstrip('0').rstrip('.'))
         )
         fig.update_yaxes(tickformat=".2f")
         fig.update_traces(texttemplate="%{text}", textposition="outside")
         st.plotly_chart(fig, use_container_width=True)
 
-        # Table
         tbl = surf_month.copy()
-        tbl["SURFACE SEAGRASS MAPPING"] = tbl["SURFACE SEAGRASS MAPPING"].apply(format_float)
+        tbl["SURFACE SEAGRASS MAPPING"] = tbl["SURFACE SEAGRASS MAPPING"].map(lambda v: "" if pd.isna(v) else f"{v:.2f}".rstrip('0').rstrip('.'))
         st.dataframe(tbl, use_container_width=True, hide_index=True)
+
+
+
 
     # --------------------------------
     # Cyanobacteria Evidence (ready)
