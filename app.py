@@ -1,7 +1,7 @@
 import streamlit as st
 import seagrass_cover
 import seagrass_cover_zones
-import dugong_grazing
+import dugong_grazing  
 import drone_mapping
 
 st.set_page_config(page_title="Green Guardian", page_icon="🌱", layout="wide")
@@ -9,24 +9,45 @@ st.set_page_config(page_title="Green Guardian", page_icon="🌱", layout="wide")
 if 'page' not in st.session_state:
     st.session_state.page = "seagrass"
 
-st.sidebar.title("Navigation")
-page = st.sidebar.radio(
-    "Go to",
-    ["Seagrass Cover", "Zones & Richness", "Dugong Grazing", "Drone Mapping"],
-    index=["Seagrass Cover", "Zones & Richness", "Dugong Grazing", "Drone Mapping"].index(
-        st.session_state.get("page_title", "Seagrass Cover")
-    )
-)
+# Sidebar stylisée
+st.sidebar.markdown("""
+<style>
+button.sidebar-button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+    text-align: left;
+    padding: 10px 5px;
+    width: 100%;
+    cursor: pointer;
+}
 
-if page == "Seagrass Cover":
-    st.session_state.page_title = "Seagrass Cover"
+button.sidebar-button:hover {
+    background-color: #444;
+    font-weight: bold;
+}
+</style>
+
+<h1 style="margin-bottom: 20px; font-size: 28px;">📌 Navigation</h1>
+""", unsafe_allow_html=True)
+
+# Boutons de navigation
+if st.sidebar.button("🌿 Seagrass Cover", key="seagrass"):
+    st.session_state.page = "seagrass"
+if st.sidebar.button("🌱 Seagrass Cover Zones", key="seagrass_cover_zones"):
+    st.session_state.page = "seagrass_cover_zones"
+if st.sidebar.button("🐾 Dugong – Pâturage", key="dugong_grazing"):
+    st.session_state.page = "dugong_grazing"
+if st.sidebar.button("🛩️ Drone – Mapping", key="drone_mapping"):
+    st.session_state.page = "drone_mapping"
+
+# Affichage dynamique du contenu selon le bouton
+if st.session_state.page == "seagrass":
     seagrass_cover.main()
-elif page == "Zones & Richness":
-    st.session_state.page_title = "Zones & Richness"
+elif st.session_state.page == "seagrass_cover_zones":
     seagrass_cover_zones.main()
-elif page == "Dugong Grazing":
-    st.session_state.page_title = "Dugong Grazing"
+elif st.session_state.page == "dugong_grazing":
     dugong_grazing.main()
-else:
-    st.session_state.page_title = "Drone Mapping"
+elif st.session_state.page == "drone_mapping":
     drone_mapping.main()
