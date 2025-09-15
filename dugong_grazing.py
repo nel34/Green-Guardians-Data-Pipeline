@@ -81,14 +81,22 @@ def main():
             # Display only the chart (removed side table)
             cover_stats = df_cov.groupby('grazing_bin')['SEAGRASS_COVER'].agg(['mean', 'std', 'count']).reset_index()
             cover_stats['grazing'] = cover_stats['grazing_bin'].map({0: "Pas de pâturage", 1: "Avec pâturage"})
+
+            # compute standard error for error bars
+            cover_stats['std_err'] = cover_stats.apply(lambda r: (r['std'] / np.sqrt(r['count'])) if r['count'] > 0 else np.nan, axis=1)
+
+            # Plot only (no side table)
             fig2 = px.bar(
-                cover_stats, x='grazing', y='mean', error_y='std',
-                labels={'mean': "Couverture moyenne (%)", "grazing": "Présence traces de pâturage"},
-                text=cover_stats['mean'].apply(format_float),
-                title="Comparaison de la couverture des herbiers selon la présence de pâturage"
+                cover_stats,
+                x='grazing',
+                y='mean',
+                error_y='std_err',
+                labels={'grazing': 'Pâturage', 'mean': 'Moyenne couverture herbière (%)'},
+                title="Couverture moyenne des herbiers selon présence de pâturage",
+                text=cover_stats['mean'].apply(format_float)
             )
             fig2.update_yaxes(tickformat=".2f")
-            fig2.update_traces(texttemplate='%{text}')
+            fig2.update_traces(texttemplate='%{text}', textposition='outside')
             st.plotly_chart(fig2, use_container_width=True)
 
 if __name__ == '__main__':

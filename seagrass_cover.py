@@ -2,11 +2,18 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import plotly.express as px
 
 @st.cache_data
 def load_data():
     df = pd.read_excel('TRANSECT_DATA_SUMMARY.xlsx', sheet_name='TRANSECT DATA SUMMARY')
     return df
+
+def format_float(val):
+    if pd.isnull(val):
+        return ""
+    v = round(float(val), 2)
+    return str(int(v)) if v == int(v) else f"{v:.2f}"
 
 def main():
     df = load_data()
@@ -34,34 +41,44 @@ def main():
         std_err = covers.std(ddof=1) / np.sqrt(len(covers)) if len(covers) > 0 else np.nan
         stats.append((year, mean, std_err, len(covers)))
 
-    fig = go.Figure()
-    def format_float(val):
-        return f"{val:.2f}".rstrip('0').rstrip('.') if not np.isnan(val) else ""
+    years = [str(s[0]) for s in stats]
+    means = [s[1] for s in stats]
+    errs = [s[2] for s in stats]
+    ns = [s[3] for s in stats]
 
-    for (year, mean, std_err, n) in stats:
-        fig.add_trace(go.Bar(
-            x=[str(year)],
-            y=[mean],
-            name=str(year),
-            error_y=dict(type='data', array=[std_err], visible=True),
-            text=[f"{format_float(mean)} ± {format_float(std_err)}"],
-            textposition='outside',
-            marker_color='gray',
-            opacity=0.8
-        ))
+    # prepare texts for bar labels
+    texts = [format_float(m) for m in means]
+
+    fig = go.Figure()
+    # Single uniform colour for all bars (no per-bar colours)
+    uniform_color = "steelblue"
+    fig.add_trace(go.Bar(
+        x=years,
+        y=means,
+        error_y=dict(type='data', array=errs, visible=True, thickness=1.5, width=6),  # width>0 restores caps
+        marker=dict(color=uniform_color, line=dict(width=1, color='rgba(0,0,0,0.08)')),
+        text=texts,
+        textposition='outside',
+        hovertemplate=(
+            "<b>Year</b>: %{x}<br>"
+            "<b>Mean</b>: %{y:.2f}%<br>"
+            "<b>Std err</b>: %{customdata[0]:.2f}<br>"
+            "<b>n</b>: %{customdata[1]}<extra></extra>"
+        ),
+        customdata=np.column_stack((errs, ns)),
+        showlegend=False
+    ))
 
     fig.update_layout(
         title="Average Seagrass Cover (%)",
         xaxis_title="Year",
         yaxis_title="% Cover",
-        yaxis=dict(
-            range=[0, max([x[1] + (x[2] if not np.isnan(x[2]) else 0) + 5 for x in stats])],
-            tickformat=".2~f"
-        ),
-        bargap=0.5,
-        showlegend=False,
-        height=600
+        template="plotly_white",
+        bargap=0.25,
+        yaxis=dict(range=[0, max([m + (e or 0) for m, e in zip(means, errs)]) * 1.08]),
+        height=520
     )
+    fig.update_traces(marker_line_color="rgba(0,0,0,0.08)", marker_line_width=1)
 
     result_table = pd.DataFrame(stats, columns=['Year', 'Mean (%)', "Standard Error", "n"])
     result_table['Year'] = result_table['Year'].astype(str)
@@ -111,15 +128,23 @@ def main():
 
         # Build the chart
         fig_month = go.Figure()
-        for _, row in month_stats.iterrows():
-            fig_month.add_trace(go.Bar(
-                x=[row['MONTH']],
-                y=[row['mean']],
-                error_y=dict(type='data', array=[row['std_error']], visible=True),
-                text=[f"{row['mean']:.2f} ± {row['std_error']:.2f}"],
-                textposition='outside',
-                marker_color='teal'
-            ))
+        # month chart: uniform colour, single trace, show labels and caps
+        month_texts = month_stats['mean'].apply(format_float).tolist()
+        fig_month.add_trace(go.Bar(
+            x=month_stats['MONTH'],
+            y=month_stats['mean'],
+            error_y=dict(type='data', array=month_stats['std_error'].fillna(0).tolist(), visible=True, thickness=1.5, width=6),  # caps restored
+            marker=dict(color=uniform_color, line=dict(width=1, color='rgba(0,0,0,0.08)')),
+            text=month_texts,
+            textposition='outside',
+            hovertemplate=(
+                "<b>Month</b>: %{x}<br>"
+                "<b>Mean</b>: %{y:.2f}%<br>"
+                "<b>Std err</b>: %{customdata[0]:.2f}<extra></extra>"
+            ),
+            customdata=np.column_stack((month_stats['std_error'].fillna(0),)),
+            showlegend=False
+        ))
 
         fig_month.update_layout(
             title="Average % Seagrass Cover by Month",

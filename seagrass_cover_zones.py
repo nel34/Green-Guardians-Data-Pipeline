@@ -75,15 +75,8 @@ def main():
                 title='Species Richness by Zone'
             )
             fig_zone.update_yaxes(tickformat=".2f")
-            c1, c2 = st.columns([2,1])
-            with c1:
-                st.plotly_chart(fig_zone, use_container_width=True)
-            # For the table
-            with c2:
-                zone_stats_fmt = zone_stats.copy()
-                zone_stats_fmt['mean'] = zone_stats_fmt['mean'].apply(format_float)
-                zone_stats_fmt['std_error'] = zone_stats_fmt['std_error'].apply(format_float)
-                st.dataframe(zone_stats_fmt)
+            # Display only the chart (removed side table)
+            st.plotly_chart(fig_zone, use_container_width=True)
 
         with tab2:
             st.header("Species Richness by Month")
@@ -205,12 +198,5 @@ def main():
                 showlegend=False,
                 height=600
             )
-            c5, c6 = st.columns([2,1])
-            with c5:
-                st.plotly_chart(fig, use_container_width=True)
-            with c6:
-                result_table = pd.DataFrame(stats, columns=['Zone', 'Mean (%)', "Standard Error"])
-                result_table_fmt = result_table.copy()
-                result_table_fmt['Mean (%)'] = result_table_fmt['Mean (%)'].apply(format_float)
-                result_table_fmt['Standard Error'] = result_table_fmt['Standard Error'].apply(format_float)
-                st.dataframe(result_table_fmt)
+            # Display only the chart (removed side table)
+            st.plotly_chart(fig, use_container_width=True)
