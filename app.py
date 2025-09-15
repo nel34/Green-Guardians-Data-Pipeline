@@ -3,6 +3,7 @@ import seagrass_cover
 import seagrass_cover_zones
 import dugong_grazing  
 import drone_mapping
+import cyanobacteria_evidence
 
 st.set_page_config(page_title="Green Guardian", page_icon="🌱", layout="wide")
 
@@ -41,6 +42,8 @@ if st.sidebar.button("🐾 Dugong – Pâturage", key="dugong_grazing"):
     st.session_state.page = "dugong_grazing"
 if st.sidebar.button("🛩️ Drone – Mapping", key="drone_mapping"):
     st.session_state.page = "drone_mapping"
+if st.sidebar.button("🔵 Cyanobacteria Evidence", key="cyanobacteria_evidence"):
+    st.session_state.page = "cyanobacteria_evidence"
 
 # Affichage dynamique du contenu selon le bouton
 if st.session_state.page == "seagrass":
@@ -51,3 +54,5 @@ elif st.session_state.page == "dugong_grazing":
     dugong_grazing.main()
 elif st.session_state.page == "drone_mapping":
     drone_mapping.main()
+elif st.session_state.page == "cyanobacteria_evidence":
+    cyanobacteria_evidence.main()

@@ -122,46 +122,6 @@ def main():
         tbl["SURFACE SEAGRASS MAPPING"] = tbl["SURFACE SEAGRASS MAPPING"].map(lambda v: "" if pd.isna(v) else f"{v:.2f}".rstrip('0').rstrip('.'))
         st.dataframe(tbl, use_container_width=True, hide_index=True)
 
-
-
-
-    # --------------------------------
-    # Cyanobacteria Evidence (ready)
-    # --------------------------------
-    st.subheader("Cyanobacteria evidence")
-    df_cy = df_filt.dropna(subset=["CYANOBACTERIA EVIDENCE"]).copy()
-    if df_cy.empty:
-        st.info("No cyanobacteria evidence data yet. This chart will populate once data is added.")
-    else:
-        cy_keys = [k for k in ["YEAR","MONTH","SITE","ZONE","CYANOBACTERIA EVIDENCE"] if k in df_cy.columns]
-        df_cy_u = df_cy.drop_duplicates(subset=cy_keys)
-        cy_month = (
-            df_cy_u.groupby(["YEAR","MONTH"], as_index=False)["CYANOBACTERIA EVIDENCE"].sum()
-        )
-        # Ensure YEAR is shown without thousand separators
-        cy_month["YEAR"] = cy_month["YEAR"].astype(int).astype(str)
-        cy_month["MONTH"] = pd.Categorical(cy_month["MONTH"], categories=months_order, ordered=True)
-        cy_month = cy_month.sort_values(["YEAR","MONTH"])
-
-        fig_cy = px.bar(
-            cy_month,
-            x="MONTH",
-            y="CYANOBACTERIA EVIDENCE",
-            color="YEAR",
-            barmode="group",
-            labels={
-                "MONTH":"Month",
-                "CYANOBACTERIA EVIDENCE":"Cyanobacteria evidence (units)",
-                "YEAR":"Year"
-            },
-            title="Cyanobacteria Evidence by Month and Year",
-            text=cy_month["CYANOBACTERIA EVIDENCE"].apply(format_float)
-        )
-        fig_cy.update_yaxes(tickformat=".2f")
-        fig_cy.update_traces(texttemplate="%{text}", textposition="outside")
-        st.plotly_chart(fig_cy, use_container_width=True)
-        st.dataframe(cy_month, use_container_width=True, hide_index=True)
-
     # -----------------------------------------------
     # Dugong Feeding Evidence Mapping (ready as well)
     # -----------------------------------------------
