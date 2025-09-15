@@ -59,23 +59,17 @@ def main():
         if grazing_stats.empty:
             st.warning("Aucune donnée sur le pâturage pour cette sélection.")
         else:
-            col_graph, col_table = st.columns([3, 2])
-            with col_graph:
-                fig1 = px.bar(
-                    grazing_stats,
-                    x='Année', y='Fréquence de pâturage', color='Zone', barmode='group',
-                    labels={'Fréquence de pâturage': "Fréquence de pâturage (0-1)", 'Année': 'Année', 'Zone': 'Zone'},
-                    text=grazing_stats['Fréquence de pâturage'].apply(format_float),
-                    title="Fréquence de pâturage du dugong par zone et par année"
-                )
-                fig1.update_yaxes(tickformat=".2f")
-                fig1.update_traces(texttemplate='%{text}')
-                st.plotly_chart(fig1, use_container_width=True)
-            with col_table:
-                grazing_stats_fmt = grazing_stats.copy()
-                for col in grazing_stats_fmt.select_dtypes(include=np.number).columns:
-                    grazing_stats_fmt[col] = grazing_stats_fmt[col].apply(format_float)
-                st.dataframe(grazing_stats_fmt, use_container_width=True, hide_index=True)
+            # Display only the chart (removed side table)
+            fig1 = px.bar(
+                grazing_stats,
+                x='Année', y='Fréquence de pâturage', color='Zone', barmode='group',
+                labels={'Fréquence de pâturage': "Fréquence de pâturage (0-1)", 'Année': 'Année', 'Zone': 'Zone'},
+                text=grazing_stats['Fréquence de pâturage'].apply(format_float),
+                title="Fréquence de pâturage du dugong par zone et par année"
+            )
+            fig1.update_yaxes(tickformat=".2f")
+            fig1.update_traces(texttemplate='%{text}')
+            st.plotly_chart(fig1, use_container_width=True)
 
     # --- Tab 2 : Lien pâturage & couverture herbière ---
     with tab2:
@@ -84,31 +78,18 @@ def main():
         if df_cov.empty:
             st.warning("Pas de données suffisantes.")
         else:
-            col_graph2, col_table2 = st.columns([3, 2])
-            with col_graph2:
-                cover_stats = df_cov.groupby('grazing_bin')['SEAGRASS_COVER'].agg(['mean', 'std', 'count']).reset_index()
-                cover_stats['grazing'] = cover_stats['grazing_bin'].map({0: "Pas de pâturage", 1: "Avec pâturage"})
-                fig2 = px.bar(
-                    cover_stats, x='grazing', y='mean', error_y='std',
-                    labels={'mean': "Couverture moyenne (%)", "grazing": "Présence traces de pâturage"},
-                    text=cover_stats['mean'].apply(format_float),
-                    title="Comparaison de la couverture des herbiers selon la présence de pâturage"
-                )
-                fig2.update_yaxes(tickformat=".2f")
-                fig2.update_traces(texttemplate='%{text}')
-                st.plotly_chart(fig2, use_container_width=True)
-            with col_table2:
-                cover_stats_fmt = cover_stats[["grazing", "mean", "std", "count"]].rename(
-                    columns={
-                        "grazing": "État pâturage",
-                        "mean": "Moyenne couverture (%)",
-                        "std": "Écart-type",
-                        "count": "N"
-                    }
-                )
-                for col in ["Moyenne couverture (%)", "Écart-type"]:
-                    cover_stats_fmt[col] = cover_stats_fmt[col].apply(format_float)
-                st.dataframe(cover_stats_fmt, use_container_width=True, hide_index=True)
+            # Display only the chart (removed side table)
+            cover_stats = df_cov.groupby('grazing_bin')['SEAGRASS_COVER'].agg(['mean', 'std', 'count']).reset_index()
+            cover_stats['grazing'] = cover_stats['grazing_bin'].map({0: "Pas de pâturage", 1: "Avec pâturage"})
+            fig2 = px.bar(
+                cover_stats, x='grazing', y='mean', error_y='std',
+                labels={'mean': "Couverture moyenne (%)", "grazing": "Présence traces de pâturage"},
+                text=cover_stats['mean'].apply(format_float),
+                title="Comparaison de la couverture des herbiers selon la présence de pâturage"
+            )
+            fig2.update_yaxes(tickformat=".2f")
+            fig2.update_traces(texttemplate='%{text}')
+            st.plotly_chart(fig2, use_container_width=True)
 
 if __name__ == '__main__':
     main()
