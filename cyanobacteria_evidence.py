@@ -42,9 +42,9 @@ def main():
 
     col1, col2 = st.columns(2)
     with col1:
-        years_sel = st.multiselect("Years:", years_available, default=years_available)
+        years_sel = st.multiselect(t("x_year"), years_available, default=years_available)
     with col2:
-        months_sel = st.multiselect("Months:", months_available, default=months_available)
+        months_sel = st.multiselect(t("month_x_label"), months_available, default=months_available)
 
     # Filter and prepare data
     df_filt = df[df["YEAR"].isin(years_sel) & df["MONTH"].isin(months_sel)].copy()
