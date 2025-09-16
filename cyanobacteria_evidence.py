@@ -15,7 +15,7 @@ def format_float(val):
     return str(int(v)) if v == int(v) else f"{v:.2f}"
 
 def main():
-    st.title("Cyanobacteria Evidence")
+    st.title("🦠 Cyanobacteria Evidence")
     st.markdown("Cyanobacteria evidence by month and year. Filters for years and months are available.")
 
     df = load_data()

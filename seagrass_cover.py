@@ -87,7 +87,7 @@ def main():
 
     st.plotly_chart(fig, use_container_width=True)
         
-    st.header("🌾 Average Seagrass Cover by Month (Fig. 4)")
+    st.header("Average Seagrass Cover by Month")
 
     # Standardize month names
     df['MONTH'] = df['MONTH'].astype(str).str.upper()

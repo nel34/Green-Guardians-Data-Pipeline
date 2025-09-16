@@ -40,9 +40,9 @@ if st.sidebar.button("🌱 Seagrass Cover Zones", key="seagrass_cover_zones"):
     st.session_state.page = "seagrass_cover_zones"
 if st.sidebar.button("🦭 Dugong – Pâturage", key="dugong_grazing"):
     st.session_state.page = "dugong_grazing"
-if st.sidebar.button("🛩️ Drone – Mapping", key="drone_mapping"):
+if st.sidebar.button("🚁 Drone – Mapping", key="drone_mapping"):
     st.session_state.page = "drone_mapping"
-if st.sidebar.button("🔵 Cyanobacteria Evidence", key="cyanobacteria_evidence"):
+if st.sidebar.button("🦠 Cyanobacteria Evidence", key="cyanobacteria_evidence"):
     st.session_state.page = "cyanobacteria_evidence"
 
 # Affichage dynamique du contenu selon le bouton

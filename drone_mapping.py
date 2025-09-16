@@ -21,7 +21,7 @@ def format_float(val):
     return str(int(v)) if v == int(v) else f"{v:.2f}"
 
 def main():
-    st.title("🛩️ Drone Mapping")
+    st.title("🚁 Drone Mapping")
     st.markdown("Seagrass mapped surface from drone mapping, with filters by year and month, deduplicated per month to avoid double-counting repeated entries. Placeholders are ready for cyanobacteria and dugong feeding evidence charts when data becomes available.")
 
     df = load_data()
