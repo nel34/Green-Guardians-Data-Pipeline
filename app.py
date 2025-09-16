@@ -1,5 +1,4 @@
 import streamlit as st
-import translations
 
 import seagrass_cover
 import seagrass_cover_zones
@@ -9,33 +8,39 @@ import cyanobacteria_evidence
 
 st.set_page_config(page_title="Green Guardian", page_icon="🌱", layout="wide")
 
-# initialize language
-if "lang" not in st.session_state:
-    st.session_state.lang = "en"
 
-# Sidebar language selector
-lang = st.sidebar.selectbox(
-    translations.t("select_language"),
-    options=[("English", "en"), ("ไทย", "th")],
-    format_func=lambda v: v[0],
-    index=0 if st.session_state.lang == "en" else 1,
-)
-# store code in session_state
-st.session_state.lang = lang[1]
 
-# Sidebar navigation (use translations)
+# ensure translation helper
+import translations
+t = translations.t
+
+
+
+# small spacer between selector and menu header
+st.sidebar.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+# Menu header
+st.sidebar.markdown(f'<p style="font-size:35px; font-weight:bold;">📌 {t("menu_title")}</p>', unsafe_allow_html=True)
+st.sidebar.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
+
+
+# Sidebar navigation with small vertical spacing between buttons
 if 'page' not in st.session_state:
     st.session_state.page = "seagrass"
 
-if st.sidebar.button(translations.t("nav_seagrass"), key="seagrass"):
+if st.sidebar.button(t("nav_seagrass"), key="seagrass"):
     st.session_state.page = "seagrass"
-if st.sidebar.button(translations.t("nav_seagrass_zones"), key="seagrass_cover_zones"):
+
+if st.sidebar.button(t("nav_seagrass_zones"), key="seagrass_cover_zones"):
     st.session_state.page = "seagrass_cover_zones"
-if st.sidebar.button(translations.t("nav_dugong"), key="dugong_grazing"):
+
+if st.sidebar.button(t("nav_dugong"), key="dugong_grazing"):
     st.session_state.page = "dugong_grazing"
-if st.sidebar.button(translations.t("nav_drone"), key="drone_mapping"):
+
+if st.sidebar.button(t("nav_drone"), key="drone_mapping"):
     st.session_state.page = "drone_mapping"
-if st.sidebar.button(translations.t("nav_cyano"), key="cyanobacteria_evidence"):
+
+if st.sidebar.button(t("nav_cyano"), key="cyanobacteria_evidence"):
     st.session_state.page = "cyanobacteria_evidence"
 
 # Display selected page
@@ -49,3 +54,21 @@ elif st.session_state.page == "drone_mapping":
     drone_mapping.main()
 elif st.session_state.page == "cyanobacteria_evidence":
     cyanobacteria_evidence.main()
+    
+st.sidebar.markdown('<div style="height:300px;"></div>', unsafe_allow_html=True)
+    
+# ensure session_state.lang exists
+if "lang" not in st.session_state:
+    st.session_state.lang = "en"
+
+# --- Compact language selector: no label, placed in left column of a small two-col row ---
+col_left, col_right = st.sidebar.columns([2,1])
+with col_left:
+    lang = st.selectbox(
+        "",  # no visible label
+        options=[("English", "en"), ("ไทย", "th")],
+        format_func=lambda v: v[0],
+        index=0 if st.session_state.lang == "en" else 1,
+        key="__lang_select"
+    )
+st.session_state.lang = lang[1]

@@ -46,6 +46,7 @@ TRANSLATIONS = {
         "avg_species_y_label": "Average Species Richness",
         "zone_x_label": "Zone",
         "month_x_label": "Month",
+        "x_year": "Year",
         "global_species_richness": "Global average species richness:",
         "download_filtered_data": "Download filtered data (CSV)",
         # Species by month / small bar chart
@@ -79,6 +80,7 @@ TRANSLATIONS = {
         "grazing_yes": "With grazing",
         # New key for showing by zone
         "show_by_zone": "Show by zone",
+        "menu_title": "Menu",
     },
     "th": {
         # Navigation (Thai approximative translations)
@@ -124,6 +126,7 @@ TRANSLATIONS = {
         "avg_species_y_label": "ความหลากหลายชนิดเฉลี่ย",
         "zone_x_label": "โซน",
         "month_x_label": "เดือน",
+        "x_year": "ปี",
         "global_species_richness": "ค่าเฉลี่ยความหลากหลายชนิด (ทั่ว):",
         "download_filtered_data": "ดาวน์โหลดข้อมูลกรอง (CSV)",
         "avg_species_by_month_title": "ค่าเฉลี่ยความหลากหลายชนิดตามเดือน",
@@ -137,8 +140,6 @@ TRANSLATIONS = {
         "grazing_impact_title": "ความสัมพันธ์ระหว่างการกินและการคลุมหญ้าทะเล",
         "grazing_zone_label": "โซน",
         "grazing_y_label": "ความถี่ / จำนวน",
-        "x_year": "ปี",
-        "y_percent_cover": "% การคลุม",
         "dugong_feeding_title": "การทำแผนที่หลักฐานการให้อาหาร Dugong",
         "grazing_freq_x_label": "โซน",
         "grazing_freq_y_label": "ความถี่ / จำนวน",
@@ -147,6 +148,7 @@ TRANSLATIONS = {
         "grazing_no": "ไม่มีการกิน",
         "grazing_yes": "มีการกิน",
         "show_by_zone": "แสดงตามโซน",
+        "menu_title": "เมนู",
     }
 }
 
