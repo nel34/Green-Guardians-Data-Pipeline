@@ -33,13 +33,13 @@ def main():
     col1, col2, col3 = st.columns(3)
     with col1:
         zones = sorted(df['ZONE'].dropna().unique())
-        zone_sel = st.multiselect("Zones:", zones, default=zones)
+        zone_sel = st.multiselect(t("zone_x_label"), zones, default=zones)
     with col2:
         mois = sorted(df['MONTH'].dropna().unique())
-        mois_sel = st.multiselect(t("select_months"), mois, default=mois)
+        mois_sel = st.multiselect(t("month_x_label"), mois, default=mois)
     with col3:
         years = sorted(df['YEAR'].dropna().unique())
-        annee_sel = st.multiselect("Years:", years, default=years)
+        annee_sel = st.multiselect(t("x_year"), years, default=years)
 
     df_filt = df[
         df['ZONE'].isin(zone_sel) &
@@ -51,7 +51,7 @@ def main():
 
     # --- Tab 1 : Présence de traces de pâturage par zone/année ---
     with tab1:
-        st.subheader("Grazing frequency by zone and year")
+        st.subheader(t("grazing_frequency_title"))
         grazing_stats = df_filt.groupby(['ZONE', 'YEAR'])['grazing_bin'].mean().reset_index()
         grazing_stats.columns = ['Zone', 'Année', 'Fréquence de pâturage']
 
@@ -63,8 +63,7 @@ def main():
                 grazing_stats,
                 x='Année', y='Fréquence de pâturage', color='Zone', barmode='group',
                 labels={'Fréquence de pâturage': "Fréquence de pâturage (0-1)", 'Année': 'Année', 'Zone': 'Zone'},
-                text=grazing_stats['Fréquence de pâturage'].apply(format_float),
-                title="Fréquence de pâturage du dugong par zone et par année"
+                text=grazing_stats['Fréquence de pâturage'].apply(format_float)
             )
             fig1.update_yaxes(tickformat=".2f")
             fig1.update_traces(texttemplate='%{text}')
@@ -72,7 +71,7 @@ def main():
 
     # --- Tab 2 : Lien pâturage & couverture herbière ---
     with tab2:
-        st.subheader("Relationship between grazing and seagrass cover")
+        st.subheader(t("grazing_impact_title"))
         df_cov = df_filt.dropna(subset=['SEAGRASS_COVER'])
         if df_cov.empty:
             st.warning("Pas de données suffisantes.")

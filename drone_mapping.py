@@ -112,8 +112,12 @@ def main():
             y="SURFACE SEAGRASS MAPPING",
             color="YEAR",
             barmode="group",
-            labels={"MONTH": "Month", "SURFACE SEAGRASS MAPPING": "Mapped surface (m²)", "YEAR": "Year"},
-            title="Mapped Seagrass Surface by Month and Year",
+            labels={
+                "MONTH": t("month_x_label"),
+                "SURFACE SEAGRASS MAPPING": t("mapped_surface_y_label"),
+                "YEAR": t("x_year")
+            },
+            title=t("mapped_surface_title"),
             text=surf_month["SURFACE SEAGRASS MAPPING"].map(lambda v: "" if pd.isna(v) else f"{v:.2f}".rstrip('0').rstrip('.'))
         )
         fig.update_yaxes(tickformat=".2f")
@@ -124,7 +128,7 @@ def main():
         tbl["SURFACE SEAGRASS MAPPING"] = tbl["SURFACE SEAGRASS MAPPING"].map(
             lambda v: "" if pd.isna(v) else f"{v:.2f}".rstrip('0').rstrip('.') + " m²"
         )
-        tbl = tbl.rename(columns={"SURFACE SEAGRASS MAPPING": "SURFACE SEAGRASS MAPPING (m²)"})
+        tbl = tbl.rename(columns={"SURFACE SEAGRASS MAPPING": f"{t('mapped_surface_y_label')} (m²)"})
         st.dataframe(tbl, use_container_width=True, hide_index=True)
 
     # -----------------------------------------------

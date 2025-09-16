@@ -40,9 +40,9 @@ def main():
 
     # -------- Tabs for figures --------
     tab1, tab2, tab3 = st.tabs([
-        "Species Richness by Zone",
-        "Species Richness by Month",
-        "Seagrass Cover"
+        t("tab_species_zone"),
+        t("tab_species_month"),
+        t("tab_seagrass_cover")
     ])
 
     # -------- Prepare filtered data ----------- 
@@ -62,7 +62,7 @@ def main():
         st.warning(t("no_species_data"))
     else:
         with tab1:
-            st.header("Average Species Richness by Zone")
+            st.header(t("avg_species_by_zone_title"))
             zone_stats = df_rich_filt.groupby('ZONE').agg(
                 mean=('SP_RICHNESS', 'mean'),
                 std_error=('SP_RICHNESS', lambda x: x.std(ddof=1) / np.sqrt(len(x))),
@@ -73,15 +73,15 @@ def main():
                 x='ZONE', y='mean',
                 error_y='std_error',
                 text=zone_stats['mean'].apply(format_float),
-                labels={"mean": "Average Species Richness", "ZONE": "Zone"},
-                title='Species Richness by Zone'
+                labels={"mean": t("avg_species_y_label"), "ZONE": t("zone_x_label")},
+                title=t("species_by_zone_chart_title")
             )
             fig_zone.update_yaxes(tickformat=".2f")
             # Display only the chart (removed side table)
             st.plotly_chart(fig_zone, use_container_width=True)
 
         with tab2:
-            st.header("Species Richness by Month")
+            st.header(t("tab_species_month"))
             sel_par_zone = st.checkbox("Show by zone", value=False, key="sp_month")
             if sel_par_zone:
                 mois_stats = df_rich_filt.groupby(['MONTH', 'ZONE']).agg(
@@ -102,8 +102,8 @@ def main():
                 fig_mois = px.line(
                     mois_stats, x='MONTH', y='mean', error_y='std_error',
                     markers=True,
-                    labels={"mean": "Species Richness", "MONTH": "Month"},
-                    title="Monthly Evolution (All Zones)"
+                    labels={"mean": t("avg_species_y_label"), "MONTH": t("month_x_label")},
+                    title=t("avg_species_by_month_title")
                 )
             fig_mois.update_yaxes(tickformat=".2f")
             c3, c4 = st.columns([3,2])
@@ -121,16 +121,16 @@ def main():
                     y='mean',
                     error_y='std_error',
                     text=mois_stats['mean'].apply(format_float),
-                    labels={"mean": "Average Species Richness", "MONTH": "Month"},
-                    title="Average Species Richness by Month",
+                    labels={"mean": t("avg_species_y_label"), "MONTH": t("month_x_label")},
+                    title=t("avg_species_by_month_title"),
                     color='mean',
                     color_continuous_scale='Viridis'
                 )
                 fig_bar.update_traces(marker_line_color='black', marker_line_width=1.5, textposition='outside')
                 fig_bar.update_layout(
                     yaxis=dict(tickformat=".2f"),
-                    xaxis_title="Month",
-                    yaxis_title="Average Species Richness",
+                    xaxis_title=t("month_x_label"),
+                    yaxis_title=t("avg_species_y_label"),
                     plot_bgcolor='rgba(245,245,245,1)',
                     bargap=0.3,
                     showlegend=False,
@@ -139,19 +139,19 @@ def main():
                 st.plotly_chart(fig_bar, use_container_width=True)
 
             # Global stat
-            st.subheader("Global Species Richness (all filters applied)")
+            st.subheader(t("global_species_richness"))
             global_stats = df_rich_filt["SP_RICHNESS"].agg(['mean', 'std', 'count'])
             global_mean = global_stats['mean']
             global_stderr = global_stats['std'] / np.sqrt(global_stats['count']) if global_stats['count'] > 0 else np.nan
-            st.write(f"**Global average species richness:** {global_mean:.2f} ± {global_stderr:.2f} (n={global_stats['count']})")
+            st.write(f"**{t('global_species_richness')}** {global_mean:.2f} ± {global_stderr:.2f} (n={global_stats['count']})")
 
             # Export
             csv = df_rich_filt.to_csv(index=False).encode('utf-8')
-            st.download_button(label="Download filtered data (CSV)", data=csv, file_name='filtered_species_richness.csv', mime='text/csv')
+            st.download_button(label=t("download_filtered_data"), data=csv, file_name='filtered_species_richness.csv', mime='text/csv')
 
     # --------- Seagrass cover ----------- 
     with tab3:
-        st.header("Seagrass Cover Comparison")
+        st.header(t("tab_seagrass_cover"))
         df_cov = df.copy()
         df_cov['ZONE'] = pd.to_numeric(df_cov['ZONE'], errors='coerce')
         df_cov['SEAGRASS_COVER'] = pd.to_numeric(df_cov['SEAGRASS_COVER'], errors='coerce')
@@ -192,9 +192,9 @@ def main():
             else:
                 ymax = 100
             fig.update_layout(
-                title=f"Seagrass Cover Comparison by Zone ({', '.join(mois_sel)} - {', '.join([str(y) for y in annees_sel])})",
-                xaxis_title="Zone",
-                yaxis_title="% Cover",
+                title=t("seagrass_cover_comparison_title").format(months=", ".join(mois_sel), years=", ".join([str(y) for y in annees_sel])),
+                xaxis_title=t("zone_x_label"),
+                yaxis_title=t("percent_cover_y_label"),
                 yaxis=dict(range=[0, ymax]),
                 bargap=0.5,
                 showlegend=False,

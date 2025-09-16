@@ -73,8 +73,8 @@ def main():
 
     fig.update_layout(
         title=t("chart_avg_cover"),
-        xaxis_title="Year",
-        yaxis_title="% Cover",
+        xaxis_title=t("x_year"),
+        yaxis_title=t("y_percent_cover"),
         template="plotly_white",
         bargap=0.25,
         yaxis=dict(range=[0, max([m + (e or 0) for m, e in zip(means, errs)]) * 1.08]),
@@ -150,8 +150,8 @@ def main():
 
         fig_month.update_layout(
             title=t("chart_avg_cover_by_month"),
-            xaxis_title="Month",
-            yaxis_title="% Cover",
+            xaxis_title=t("month_x_label"),
+            yaxis_title=t("y_percent_cover"),
             yaxis=dict(range=[0, max(month_stats['mean'] + month_stats['std_error']) + 5]),
             bargap=0.5,
             showlegend=False,

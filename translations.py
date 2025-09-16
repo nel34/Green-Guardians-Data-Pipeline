@@ -36,6 +36,37 @@ TRANSLATIONS = {
         "data_selection": "Data Selection",
         "no_species_data": "No species richness data for this selection.",
         "no_cover_data": "No cover data for this selection.",
+        # Tabs / page fragments
+        "tab_species_zone": "Species Richness by Zone",
+        "tab_species_month": "Species Richness by Month",
+        "tab_seagrass_cover": "Seagrass Cover",
+        # Species richness (zones)
+        "avg_species_by_zone_title": "Average Species Richness by Zone",
+        "species_by_zone_chart_title": "Species Richness by Zone",
+        "avg_species_y_label": "Average Species Richness",
+        "zone_x_label": "Zone",
+        "month_x_label": "Month",
+        "global_species_richness": "Global average species richness:",
+        "download_filtered_data": "Download filtered data (CSV)",
+        # Species by month / small bar chart
+        "avg_species_by_month_title": "Average Species Richness by Month",
+        # Seagrass cover by zone
+        "seagrass_cover_comparison_title": "Seagrass Cover Comparison by Zone ({months} - {years})",
+        "percent_cover_y_label": "% Cover",
+        # Drone mapping
+        "mapped_surface_title": "Mapped Seagrass Surface by Month and Year",
+        "mapped_surface_y_label": "Mapped surface (m²)",
+        # Cyanobacteria
+        "cyano_chart_title": "Cyanobacteria Evidence by Month and Year",
+        "cyano_y_label": "Cyanobacteria evidence (units)",
+        # Dugong
+        "grazing_frequency_title": "Grazing frequency by zone and year",
+        "grazing_impact_title": "Relationship between grazing and seagrass cover",
+        "grazing_zone_label": "Zone",
+        "grazing_y_label": "Frequency / Count",
+        # Generic axis labels
+        "x_year": "Year",
+        "y_percent_cover": "% Cover",
     },
     "th": {
         # Navigation (Thai approximative translations)
@@ -72,6 +103,30 @@ TRANSLATIONS = {
         "data_selection": "การเลือกข้อมูล",
         "no_species_data": "ไม่มีข้อมูลความหลากหลายชนิดสำหรับการเลือกนี้",
         "no_cover_data": "ไม่มีข้อมูลการคลุมสำหรับการเลือกนี้",
+        # Tabs / page fragments
+        "tab_species_zone": "ความหลากหลายชนิดตามโซน",
+        "tab_species_month": "ความหลากหลายชนิดตามเดือน",
+        "tab_seagrass_cover": "การคลุมหญ้าทะเล",
+        "avg_species_by_zone_title": "ค่าเฉลี่ยความหลากหลายชนิดตามโซน",
+        "species_by_zone_chart_title": "ความหลากหลายชนิดตามโซน",
+        "avg_species_y_label": "ความหลากหลายชนิดเฉลี่ย",
+        "zone_x_label": "โซน",
+        "month_x_label": "เดือน",
+        "global_species_richness": "ค่าเฉลี่ยความหลากหลายชนิด (ทั่ว):",
+        "download_filtered_data": "ดาวน์โหลดข้อมูลกรอง (CSV)",
+        "avg_species_by_month_title": "ค่าเฉลี่ยความหลากหลายชนิดตามเดือน",
+        "seagrass_cover_comparison_title": "การเปรียบเทียบการคลุมหญ้าทะเลตามโซน ({months} - {years})",
+        "percent_cover_y_label": "% การคลุม",
+        "mapped_surface_title": "พื้นที่หญ้าทะเลที่ถูกทำแผนที่ตามเดือนและปี",
+        "mapped_surface_y_label": "พื้นที่ที่ทำแผนที่ (m²)",
+        "cyano_chart_title": "หลักฐานไซยาโนแบคทีเรียตามเดือนและปี",
+        "cyano_y_label": "หลักฐานไซยาโนแบคทีเรีย (หน่วย)",
+        "grazing_frequency_title": "ความถี่การกินตามโซนและปี",
+        "grazing_impact_title": "ความสัมพันธ์ระหว่างการกินและการคลุมหญ้าทะเล",
+        "grazing_zone_label": "โซน",
+        "grazing_y_label": "ความถี่ / จำนวน",
+        "x_year": "ปี",
+        "y_percent_cover": "% การคลุม",
     }
 }
 

@@ -69,8 +69,12 @@ def main():
         y="CYANOBACTERIA EVIDENCE",
         color="YEAR",
         barmode="group",
-        labels={"MONTH":"Month", "CYANOBACTERIA EVIDENCE":"Cyanobacteria evidence (units)", "YEAR":"Year"},
-        title="Cyanobacteria Evidence by Month and Year",
+        labels={
+            "MONTH": t("month_x_label"),
+            "CYANOBACTERIA EVIDENCE": t("cyano_y_label"),
+            "YEAR": t("x_year")
+        },
+        title=t("cyano_chart_title"),
         text=cy_month["CYANOBACTERIA EVIDENCE"].apply(format_float)
     )
     fig.update_yaxes(tickformat=".2f")
