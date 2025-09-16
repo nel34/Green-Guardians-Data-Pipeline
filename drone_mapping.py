@@ -24,7 +24,6 @@ def format_float(val):
 
 def main():
     st.title(t("title_drone"))
-    st.markdown(t("title_drone"))
 
     df = load_data()
 

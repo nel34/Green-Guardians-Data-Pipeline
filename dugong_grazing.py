@@ -21,7 +21,6 @@ def format_float(val):
 def main():
     df = load_data()
     st.title(t("title_dugong"))
-    st.markdown(t("title_dugong"))
 
     # Traitement du champ GRAZING_EVIDENCE
     df['grazing_bin'] = df['GRAZING_EVIDENCE'].apply(lambda x: 1 if str(x).strip().upper() in ['Y', 'YES', '1'] else 0)
@@ -88,7 +87,8 @@ def main():
         else:
             # Display only the chart (removed side table)
             cover_stats = df_cov.groupby('grazing_bin')['SEAGRASS_COVER'].agg(['mean', 'std', 'count']).reset_index()
-            cover_stats['grazing'] = cover_stats['grazing_bin'].map({0: "Pas de pâturage", 1: "Avec pâturage"})
+            # use translations for grazing presence labels
+            cover_stats['grazing'] = cover_stats['grazing_bin'].map({0: t("grazing_no"), 1: t("grazing_yes")})
 
             # compute standard error for error bars
             cover_stats['std_err'] = cover_stats.apply(lambda r: (r['std'] / np.sqrt(r['count'])) if r['count'] > 0 else np.nan, axis=1)
@@ -99,12 +99,20 @@ def main():
                 x='grazing',
                 y='mean',
                 error_y='std_err',
-                labels={'grazing': 'Pâturage', 'mean': 'Moyenne couverture herbière (%)'},
-                title="Couverture moyenne des herbiers selon présence de pâturage",
+                labels={
+                    'grazing': t("grazing_presence_label"),
+                    'mean': t("mean_cover_y_label")
+                },
+                title=t("grazing_impact_title"),
                 text=cover_stats['mean'].apply(format_float)
             )
             fig2.update_yaxes(tickformat=".2f")
             fig2.update_traces(texttemplate='%{text}', textposition='outside')
+            # ensure translated axis titles are applied
+            fig2.update_layout(
+                xaxis_title=t("grazing_presence_label"),
+                yaxis_title=t("mean_cover_y_label")
+            )
             st.plotly_chart(fig2, use_container_width=True)
 
 if __name__ == '__main__':

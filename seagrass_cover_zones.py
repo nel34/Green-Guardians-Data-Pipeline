@@ -26,7 +26,6 @@ def main():
     # -------- Filter selection (always at the top) -----------
     st.title(t("title_zones"))
 
-    st.markdown(t("data_selection"))
     col1, col2, col3 = st.columns(3)
     with col1:
         zones = sorted([z for z in df.dropna(subset=['ZONE'])["ZONE"].unique() if pd.notnull(z)])
@@ -82,7 +81,7 @@ def main():
 
         with tab2:
             st.header(t("tab_species_month"))
-            sel_par_zone = st.checkbox("Show by zone", value=False, key="sp_month")
+            sel_par_zone = st.checkbox(t("show_by_zone"), value=False, key="sp_month")
             if sel_par_zone:
                 mois_stats = df_rich_filt.groupby(['MONTH', 'ZONE']).agg(
                     mean=('SP_RICHNESS', 'mean'),
@@ -105,16 +104,16 @@ def main():
                     labels={"mean": t("avg_species_y_label"), "MONTH": t("month_x_label")},
                     title=t("avg_species_by_month_title")
                 )
-            fig_mois.update_yaxes(tickformat=".2f")
+                fig_mois.update_yaxes(tickformat=".2f")
+                # Force a consistent height and margins so charts align vertically
+                fig_mois.update_layout(height=420, margin=dict(t=60, b=40, l=60, r=20))
+
             c3, c4 = st.columns([3,2])
             with c3:
                 st.plotly_chart(fig_mois, use_container_width=True)
-            with c4:
-                mois_stats_fmt = mois_stats.copy()
-                mois_stats_fmt['mean'] = mois_stats_fmt['mean'].apply(format_float)
-                mois_stats_fmt['std_error'] = mois_stats_fmt['std_error'].apply(format_float)
 
-                # New stylized bar chart to replace the table
+            with c4:
+                # small monthly bar chart
                 fig_bar = px.bar(
                     mois_stats,
                     x='MONTH',
@@ -134,7 +133,8 @@ def main():
                     plot_bgcolor='rgba(245,245,245,1)',
                     bargap=0.3,
                     showlegend=False,
-                    height=400
+                    height=420,
+                    margin=dict(t=110, b=40, l=40, r=20),
                 )
                 st.plotly_chart(fig_bar, use_container_width=True)
 

@@ -18,7 +18,6 @@ def format_float(val):
 
 def main():
     st.title(t("title_cyano"))
-    st.markdown(t("title_cyano"))
 
     df = load_data()
 

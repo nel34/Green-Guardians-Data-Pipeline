@@ -71,7 +71,14 @@ TRANSLATIONS = {
         "dugong_feeding_title": "Dugong feeding evidence mapping",
         # Grazing chart axis labels
         "grazing_freq_x_label": "Zone",
-        "grazing_freq_y_label": "Count / Frequency"
+        "grazing_freq_y_label": "Count / Frequency",
+        # New keys
+        "grazing_presence_label": "Grazing",
+        "mean_cover_y_label": "Mean seagrass cover (%)",
+        "grazing_no": "No grazing",
+        "grazing_yes": "With grazing",
+        # New key for showing by zone
+        "show_by_zone": "Show by zone",
     },
     "th": {
         # Navigation (Thai approximative translations)
@@ -134,7 +141,12 @@ TRANSLATIONS = {
         "y_percent_cover": "% การคลุม",
         "dugong_feeding_title": "การทำแผนที่หลักฐานการให้อาหาร Dugong",
         "grazing_freq_x_label": "โซน",
-        "grazing_freq_y_label": "ความถี่ / จำนวน"
+        "grazing_freq_y_label": "ความถี่ / จำนวน",
+        "grazing_presence_label": "การกิน",
+        "mean_cover_y_label": "ครอบคลุมหญ้าทะเลเฉลี่ย (%)",
+        "grazing_no": "ไม่มีการกิน",
+        "grazing_yes": "มีการกิน",
+        "show_by_zone": "แสดงตามโซน",
     }
 }
 
