@@ -49,7 +49,7 @@ def main():
 
     tab1, tab2 = st.tabs([t("grazing_tab1"), t("grazing_tab2")])
 
-    # --- Tab 1 : Présence de traces de pâturage par zone/année ---
+    # --- Tab 1 : Grazing frequency by zone/year ---
     with tab1:
         st.subheader(t("grazing_frequency_title"))
         grazing_stats = df_filt.groupby(['ZONE', 'YEAR'])['grazing_bin'].mean().reset_index()
@@ -62,11 +62,21 @@ def main():
             fig1 = px.bar(
                 grazing_stats,
                 x='Année', y='Fréquence de pâturage', color='Zone', barmode='group',
-                labels={'Fréquence de pâturage': "Fréquence de pâturage (0-1)", 'Année': 'Année', 'Zone': 'Zone'},
+                labels={
+                    'Fréquence de pâturage': t("grazing_freq_y_label"),
+                    'Année': t("x_year"),
+                    'Zone': t("grazing_freq_x_label")
+                },
                 text=grazing_stats['Fréquence de pâturage'].apply(format_float)
             )
             fig1.update_yaxes(tickformat=".2f")
             fig1.update_traces(texttemplate='%{text}')
+
+            # ensure axis titles and show the created figure
+            fig1.update_layout(
+                xaxis_title=t("grazing_freq_x_label"),
+                yaxis_title=t("grazing_freq_y_label")
+            )
             st.plotly_chart(fig1, use_container_width=True)
 
     # --- Tab 2 : Lien pâturage & couverture herbière ---

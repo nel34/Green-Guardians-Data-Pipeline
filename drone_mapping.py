@@ -134,7 +134,7 @@ def main():
     # -----------------------------------------------
     # Dugong Feeding Evidence Mapping (ready as well)
     # -----------------------------------------------
-    st.subheader("Dugong feeding evidence mapping")
+    st.subheader(t("dugong_feeding_title"))
     df_dug = df_filt.dropna(subset=["DUGONG FEEDING EVIDENCE MAPPING"]).copy()
     if df_dug.empty:
         st.info("No dugong feeding evidence mapping data yet. This chart will populate once data is added.")

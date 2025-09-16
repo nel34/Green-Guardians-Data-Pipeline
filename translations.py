@@ -67,6 +67,11 @@ TRANSLATIONS = {
         # Generic axis labels
         "x_year": "Year",
         "y_percent_cover": "% Cover",
+        # Additional Dugong mapping title
+        "dugong_feeding_title": "Dugong feeding evidence mapping",
+        # Grazing chart axis labels
+        "grazing_freq_x_label": "Zone",
+        "grazing_freq_y_label": "Count / Frequency"
     },
     "th": {
         # Navigation (Thai approximative translations)
@@ -127,6 +132,9 @@ TRANSLATIONS = {
         "grazing_y_label": "ความถี่ / จำนวน",
         "x_year": "ปี",
         "y_percent_cover": "% การคลุม",
+        "dugong_feeding_title": "การทำแผนที่หลักฐานการให้อาหาร Dugong",
+        "grazing_freq_x_label": "โซน",
+        "grazing_freq_y_label": "ความถี่ / จำนวน"
     }
 }
 
