@@ -62,7 +62,6 @@ if "lang" not in st.session_state:
     st.session_state.lang = "en"
 
 def _on_lang_change():
-    # met à jour la langue active ; pas d'appel à experimental_rerun ici
     st.session_state.lang = st.session_state.lang_select
 
 # compact selector (langue stockée dans st.session_state.lang_select)
@@ -70,9 +69,9 @@ col_left, col_right = st.sidebar.columns([2,1])
 with col_left:
     st.selectbox(
         "",
-        options=["en", "th"],
-        format_func=lambda v: {"en": "English", "th": "ไทย"}[v],
-        index=0 if st.session_state.lang == "en" else 1,
+        options=["en", "th", "fr"],
+        format_func=lambda v: {"en": "English", "th": "ไทย", "fr": "Français"}[v],
+        index=0 if st.session_state.lang == "en" else (1 if st.session_state.lang == "th" else 2),
         key="lang_select",
         on_change=_on_lang_change
     )
