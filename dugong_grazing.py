@@ -18,8 +18,8 @@ def format_float(val):
 
 def main():
     df = load_data()
-    st.title("🐾 Dugong – Traces de pâturage et état des herbiers")
-    st.markdown("Analyse des traces de pâturage attribuées aux dugongs et leur lien avec l’état des herbiers.")
+    st.title("🦭 Dugong – Grazing Traces and Seagrass Condition")
+    st.markdown("Analysis of dugong grazing traces and their relationship with seagrass condition.")
 
     # Traitement du champ GRAZING_EVIDENCE
     df['grazing_bin'] = df['GRAZING_EVIDENCE'].apply(lambda x: 1 if str(x).strip().upper() in ['Y', 'YES', '1'] else 0)
@@ -31,13 +31,13 @@ def main():
     col1, col2, col3 = st.columns(3)
     with col1:
         zones = sorted(df['ZONE'].dropna().unique())
-        zone_sel = st.multiselect("Zones :", zones, default=zones)
+        zone_sel = st.multiselect("Zones:", zones, default=zones)
     with col2:
         mois = sorted(df['MONTH'].dropna().unique())
-        mois_sel = st.multiselect("Mois :", mois, default=mois)
+        mois_sel = st.multiselect("Months:", mois, default=mois)
     with col3:
-        annees = sorted(df['YEAR'].dropna().astype(int).unique())
-        annee_sel = st.multiselect("Années :", annees, default=annees)
+        years = sorted(df['YEAR'].dropna().unique())
+        annee_sel = st.multiselect("Years:", years, default=years)
 
     df_filt = df[
         df['ZONE'].isin(zone_sel) &
@@ -46,13 +46,13 @@ def main():
     ]
 
     tab1, tab2 = st.tabs([
-        "Fréquence de pâturage par zone/année",
-        "Impact sur les herbiers",
+        "Grazing frequency by zone/year",
+        "Impact on seagrass",
     ])
 
     # --- Tab 1 : Présence de traces de pâturage par zone/année ---
     with tab1:
-        st.header("Fréquence de pâturage du dugong")
+        st.subheader("Grazing frequency by zone and year")
         grazing_stats = df_filt.groupby(['ZONE', 'YEAR'])['grazing_bin'].mean().reset_index()
         grazing_stats.columns = ['Zone', 'Année', 'Fréquence de pâturage']
 
@@ -73,7 +73,7 @@ def main():
 
     # --- Tab 2 : Lien pâturage & couverture herbière ---
     with tab2:
-        st.header("Couverture des herbiers selon pâturage")
+        st.subheader("Relationship between grazing and seagrass cover")
         df_cov = df_filt.dropna(subset=['SEAGRASS_COVER'])
         if df_cov.empty:
             st.warning("Pas de données suffisantes.")
