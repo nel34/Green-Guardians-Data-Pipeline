@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import translations
+t = translations.t
 
 @st.cache_data
 def load_data():
@@ -15,14 +17,14 @@ def format_float(val):
     return str(int(v)) if v == int(v) else f"{v:.2f}"
 
 def main():
-    st.title("🦠 Cyanobacteria Evidence")
-    st.markdown("Cyanobacteria evidence by month and year. Filters for years and months are available.")
+    st.title(t("title_cyano"))
+    st.markdown(t("title_cyano"))
 
     df = load_data()
 
     # Ensure columns exist
     if "CYANOBACTERIA EVIDENCE" not in df.columns:
-        st.info("No cyanobacteria column in dataset.")
+        st.info(t("no_cyano_column"))
         return
 
     # Normalize
@@ -49,7 +51,7 @@ def main():
     df_filt = df[df["YEAR"].isin(years_sel) & df["MONTH"].isin(months_sel)].copy()
     df_filt["CYANOBACTERIA EVIDENCE"] = pd.to_numeric(df_filt["CYANOBACTERIA EVIDENCE"], errors="coerce")
     if df_filt.empty:
-        st.info("No cyanobacteria evidence data for the selected filters.")
+        st.info(t("no_cyano_data"))
         return
 
     # Deduplicate per relevant keys similar to original logic

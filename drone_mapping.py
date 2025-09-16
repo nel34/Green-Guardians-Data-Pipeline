@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import translations
+t = translations.t
 
 @st.cache_data
 def load_data():
@@ -21,8 +23,8 @@ def format_float(val):
     return str(int(v)) if v == int(v) else f"{v:.2f}"
 
 def main():
-    st.title("🚁 Drone Mapping")
-    st.markdown("Seagrass mapped surface from drone mapping, with filters by year and month, deduplicated per month to avoid double-counting repeated entries. Placeholders are ready for cyanobacteria and dugong feeding evidence charts when data becomes available.")
+    st.title(t("title_drone"))
+    st.markdown(t("title_drone"))
 
     df = load_data()
 
@@ -59,14 +61,14 @@ def main():
     # -----------------------------
     # Seagrass mapped surface chart (no UI controls)
     # -----------------------------
-    st.subheader("Seagrass mapped surface")
+    st.subheader(t("seagrass_mapped_surface"))
 
     df_surf = df_filt.copy()
     df_surf["SURFACE SEAGRASS MAPPING"] = pd.to_numeric(df_surf["SURFACE SEAGRASS MAPPING"], errors="coerce")
     df_surf = df_surf.dropna(subset=["SURFACE SEAGRASS MAPPING"])
 
     if df_surf.empty:
-        st.info("No seagrass mapping data available for the current selection.")
+        st.info(t("no_drone_data"))
     else:
         # Fixed parameters (no UI)
         min_keep = 0.0

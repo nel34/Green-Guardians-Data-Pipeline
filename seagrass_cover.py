@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
+import translations
+t = translations.t
 
 @st.cache_data
 def load_data():
@@ -22,13 +24,13 @@ def main():
     df = df.dropna(subset=['YEAR'])
     df['YEAR'] = df['YEAR'].astype(int)
 
-    st.title("🌿 Average Seagrass Cover")
+    st.title(t("title_seagrass"))
 
     years_available = sorted(df['YEAR'].unique())
-    years_interest = st.multiselect("Select years of interest:", years_available, default=years_available[:5])
+    years_interest = st.multiselect(t("select_years"), years_available, default=years_available[:5])
 
     if not years_interest:
-        st.warning("No year selected. Please select at least one year to display the data.")
+        st.warning(t("no_year_selected"))
         st.stop()
 
     df_filtered = df[df['YEAR'].isin(years_interest)]
@@ -70,7 +72,7 @@ def main():
     ))
 
     fig.update_layout(
-        title="Average Seagrass Cover (%)",
+        title=t("chart_avg_cover"),
         xaxis_title="Year",
         yaxis_title="% Cover",
         template="plotly_white",
@@ -87,7 +89,7 @@ def main():
 
     st.plotly_chart(fig, use_container_width=True)
         
-    st.header("Average Seagrass Cover by Month")
+    st.header(t("avg_by_month_header"))
 
     # Standardize month names
     df['MONTH'] = df['MONTH'].astype(str).str.upper()
@@ -101,7 +103,7 @@ def main():
     # List of available months dynamically, sorted chronologically
     months_available = [m for m in month_order if m in df['MONTH'].unique()]
     months_interest = st.multiselect(
-        "Select months:",
+        t("select_months"),
         months_available,
         default=months_available
     )
@@ -118,7 +120,7 @@ def main():
     df_months = df_months.dropna(subset=['SEAGRASS_COVER'])
 
     if df_months.empty:
-        st.warning("No data for the selected months.")
+        st.warning(t("no_month_data"))
     else:
         # Calculate means and standard errors
         month_stats = df_months.groupby('MONTH').agg(
@@ -147,7 +149,7 @@ def main():
         ))
 
         fig_month.update_layout(
-            title="Average % Seagrass Cover by Month",
+            title=t("chart_avg_cover_by_month"),
             xaxis_title="Month",
             yaxis_title="% Cover",
             yaxis=dict(range=[0, max(month_stats['mean'] + month_stats['std_error']) + 5]),

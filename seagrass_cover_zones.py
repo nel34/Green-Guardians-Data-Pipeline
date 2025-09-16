@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+import translations
+t = translations.t
 
 @st.cache_data
 def load_data():
@@ -22,16 +24,16 @@ def main():
     df = load_data()
 
     # -------- Filter selection (always at the top) -----------
-    st.title("🌱 Seagrass Meadows Exploration (Species Richness & Cover)")
+    st.title(t("title_zones"))
 
-    st.markdown("### Data Selection")
+    st.markdown(t("data_selection"))
     col1, col2, col3 = st.columns(3)
     with col1:
         zones = sorted([z for z in df.dropna(subset=['ZONE'])["ZONE"].unique() if pd.notnull(z)])
-        zone_sel = st.multiselect("Zones:", zones, default=zones)
+        zone_sel = st.multiselect(t("nav_seagrass_zones"), zones, default=zones)
     with col2:
         mois = sorted(df.dropna(subset=['MONTH'])["MONTH"].astype(str).unique())
-        mois_sel = st.multiselect("Months:", mois, default=mois)
+        mois_sel = st.multiselect(t("select_months"), mois, default=mois)
     with col3:
         annees = sorted(df.dropna(subset=['YEAR'])["YEAR"].astype(int).unique())
         annees_sel = st.multiselect("Years:", annees, default=annees)
@@ -57,7 +59,7 @@ def main():
     ]
 
     if df_rich_filt.empty:
-        st.warning("No species richness data for this selection.")
+        st.warning(t("no_species_data"))
     else:
         with tab1:
             st.header("Average Species Richness by Zone")
@@ -163,7 +165,7 @@ def main():
         ]
 
         if df_cov_filt.empty:
-            st.warning("No cover data for this selection.")
+            st.warning(t("no_cover_data"))
         else:
             stats = []
             for zone in sorted(df_cov_filt['ZONE'].unique()):

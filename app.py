@@ -1,4 +1,6 @@
 import streamlit as st
+import translations
+
 import seagrass_cover
 import seagrass_cover_zones
 import dugong_grazing  
@@ -7,45 +9,36 @@ import cyanobacteria_evidence
 
 st.set_page_config(page_title="Green Guardian", page_icon="🌱", layout="wide")
 
+# initialize language
+if "lang" not in st.session_state:
+    st.session_state.lang = "en"
+
+# Sidebar language selector
+lang = st.sidebar.selectbox(
+    translations.t("select_language"),
+    options=[("English", "en"), ("ไทย", "th")],
+    format_func=lambda v: v[0],
+    index=0 if st.session_state.lang == "en" else 1,
+)
+# store code in session_state
+st.session_state.lang = lang[1]
+
+# Sidebar navigation (use translations)
 if 'page' not in st.session_state:
     st.session_state.page = "seagrass"
 
-# Sidebar stylisée
-st.sidebar.markdown("""
-<style>
-button.sidebar-button {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 18px;
-    text-align: left;
-    padding: 10px 5px;
-    width: 100%;
-    cursor: pointer;
-}
-
-button.sidebar-button:hover {
-    background-color: #444;
-    font-weight: bold;
-}
-</style>
-
-<h1 style="margin-bottom: 20px; font-size: 28px;">📌 Navigation</h1>
-""", unsafe_allow_html=True)
-
-# Boutons de navigation
-if st.sidebar.button("🌿 Seagrass Cover", key="seagrass"):
+if st.sidebar.button(translations.t("nav_seagrass"), key="seagrass"):
     st.session_state.page = "seagrass"
-if st.sidebar.button("🌱 Seagrass Cover Zones", key="seagrass_cover_zones"):
+if st.sidebar.button(translations.t("nav_seagrass_zones"), key="seagrass_cover_zones"):
     st.session_state.page = "seagrass_cover_zones"
-if st.sidebar.button("🦭 Dugong – Pâturage", key="dugong_grazing"):
+if st.sidebar.button(translations.t("nav_dugong"), key="dugong_grazing"):
     st.session_state.page = "dugong_grazing"
-if st.sidebar.button("🚁 Drone – Mapping", key="drone_mapping"):
+if st.sidebar.button(translations.t("nav_drone"), key="drone_mapping"):
     st.session_state.page = "drone_mapping"
-if st.sidebar.button("🦠 Cyanobacteria Evidence", key="cyanobacteria_evidence"):
+if st.sidebar.button(translations.t("nav_cyano"), key="cyanobacteria_evidence"):
     st.session_state.page = "cyanobacteria_evidence"
 
-# Affichage dynamique du contenu selon le bouton
+# Display selected page
 if st.session_state.page == "seagrass":
     seagrass_cover.main()
 elif st.session_state.page == "seagrass_cover_zones":

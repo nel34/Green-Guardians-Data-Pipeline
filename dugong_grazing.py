@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import translations
+t = translations.t
 
 @st.cache_data
 def load_data():
@@ -18,8 +20,8 @@ def format_float(val):
 
 def main():
     df = load_data()
-    st.title("🦭 Dugong – Grazing Traces and Seagrass Condition")
-    st.markdown("Analysis of dugong grazing traces and their relationship with seagrass condition.")
+    st.title(t("title_dugong"))
+    st.markdown(t("title_dugong"))
 
     # Traitement du champ GRAZING_EVIDENCE
     df['grazing_bin'] = df['GRAZING_EVIDENCE'].apply(lambda x: 1 if str(x).strip().upper() in ['Y', 'YES', '1'] else 0)
@@ -34,7 +36,7 @@ def main():
         zone_sel = st.multiselect("Zones:", zones, default=zones)
     with col2:
         mois = sorted(df['MONTH'].dropna().unique())
-        mois_sel = st.multiselect("Months:", mois, default=mois)
+        mois_sel = st.multiselect(t("select_months"), mois, default=mois)
     with col3:
         years = sorted(df['YEAR'].dropna().unique())
         annee_sel = st.multiselect("Years:", years, default=years)
@@ -45,10 +47,7 @@ def main():
         df['YEAR'].isin(annee_sel)
     ]
 
-    tab1, tab2 = st.tabs([
-        "Grazing frequency by zone/year",
-        "Impact on seagrass",
-    ])
+    tab1, tab2 = st.tabs([t("grazing_tab1"), t("grazing_tab2")])
 
     # --- Tab 1 : Présence de traces de pâturage par zone/année ---
     with tab1:
@@ -57,7 +56,7 @@ def main():
         grazing_stats.columns = ['Zone', 'Année', 'Fréquence de pâturage']
 
         if grazing_stats.empty:
-            st.warning("Aucune donnée sur le pâturage pour cette sélection.")
+            st.warning(t("no_grazing_data"))
         else:
             # Display only the chart (removed side table)
             fig1 = px.bar(
