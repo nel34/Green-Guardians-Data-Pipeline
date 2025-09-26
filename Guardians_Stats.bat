@@ -1,29 +1,39 @@
 @echo off
-setlocal
+setlocal ENABLEDELAYEDEXPANSION
 
-REM 1) Créer/activer l'environnement virtuel local
-if not exist .venv (
-  python -m venv .venv
-  call .\.venv\Scripts\activate
-  python -m pip install --upgrade pip
-  pip install -r requirements.txt
-) else (
-  call .\.venv\Scripts\activate
+REM 0) Aller a la racine du script
+cd /d "%~dp0"
+
+REM 1) Creer le venv si absent
+if not exist ".venv" (
+echo [INFO] Creation de l'environnement virtuel...
+python -m venv .venv || (echo [ERREUR] Echec creation venv & exit /b 1)
 )
 
-REM 2) Choisir le port de Streamlit
+REM 2) Choisir l’interpreteur du venv (sans activation)
+set "PYVENV=.venv\Scripts\python.exe"
+if not exist "%PYVENV%" (
+echo [ERREUR] Interpreteur venv introuvable: %PYVENV%
+exit /b 1
+)
+
+REM 3) Mettre pip a jour et installer les dependances
+"%PYVENV%" -m pip install --upgrade pip
+if exist "requirements.txt" (
+"%PYVENV%" -m pip install -r requirements.txt || (echo [ERREUR] Echec pip install -r requirements.txt & exit /b 1)
+) else (
+echo [AVERTISSEMENT] requirements.txt introuvable, on continue...
+)
+
+REM 4) Fixer Streamlit headless + port
 set "STREAMLIT_SERVER_PORT=8501"
+set "STREAMLIT_SERVER_HEADLESS=true"
 
-REM 3) Empêcher Streamlit d'ouvrir le navigateur automatiquement
-set "BROWSER=none"
+REM 5) Lancer Streamlit dans un nouveau shell pour ne pas bloquer le .bat
+start "" cmd /c ""%PYVENV%" -m streamlit run app.py --server.port=%STREAMLIT_SERVER_PORT% --server.headless=true"
 
-REM 4) Lancer Streamlit en arrière-plan avec le port fixé
-start "" cmd /c "python -m streamlit run app.py --server.headless=true --server.port=%STREAMLIT_SERVER_PORT%"
-
-REM 5) Attendre un peu que le serveur démarre (ajuster si besoin)
+REM 6) Attendre le demarrage puis ouvrir le navigateur UNE seule fois
 timeout /t 3 >nul
-
-REM 6) Ouvrir UNE SEULE FOIS le navigateur
 start "" http://localhost:%STREAMLIT_SERVER_PORT%
 
 endlocal
