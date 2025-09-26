@@ -34,11 +34,10 @@ REM 4) Fixer Streamlit headless + port
 set "STREAMLIT_SERVER_PORT=8501"
 set "STREAMLIT_SERVER_HEADLESS=true"
 
-REM 5) Lancer Streamlit dans un nouveau shell pour ne pas bloquer le .bat
-"%PYVENV%" -m streamlit run app.py --server.port=%STREAMLIT_SERVER_PORT% --server.headless=true 1>run.log 2>&1
-cmd /k type run.log
+REM 5) Lancer Streamlit en arrière-plan et loguer la sortie
+start "" "%PYVENV%" -m streamlit run app.py --server.port=%STREAMLIT_SERVER_PORT% --server.headless=true 1>run.log 2>&1
 
-REM 6) Attendre le demarrage puis ouvrir le navigateur UNE seule fois
+REM 6) Attendre un peu puis ouvrir le navigateur
 timeout /t 3 >nul
 start "" http://localhost:%STREAMLIT_SERVER_PORT%
 
