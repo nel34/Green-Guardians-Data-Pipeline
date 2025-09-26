@@ -4,25 +4,30 @@ setlocal ENABLEDELAYEDEXPANSION
 REM 0) Aller a la racine du script
 cd /d "%~dp0"
 
-REM 1) Creer le venv si absent
-if not exist ".venv" (
-echo [INFO] Creation de l'environnement virtuel...
-python -m venv .venv || (echo [ERREUR] Echec creation venv & exit /b 1)
+REM 1) Creer le venv si absent (ou si parametre "recreate")
+if /I "%~1"=="recreate" (
+    echo [INFO] Suppression du venv existant...
+    rmdir /s /q ".venv" 2>nul
 )
 
-REM 2) Choisir l’interpreteur du venv (sans activation)
-set "PYVENV=.venv\Scripts\python.exe"
+if not exist ".venv" (
+    echo [INFO] Creation de l'environnement virtuel...
+    python -m venv .venv || (echo [ERREUR] Echec creation venv & exit /b 1)
+)
+
+REM 2) Choisir l’interpreteur du venv (chemin résolu depuis le dossier du script)
+set "PYVENV=%~dp0.venv\Scripts\python.exe"
 if not exist "%PYVENV%" (
-echo [ERREUR] Interpreteur venv introuvable: %PYVENV%
-exit /b 1
+    echo [ERREUR] Interpreteur venv introuvable: %PYVENV%
+    exit /b 1
 )
 
 REM 3) Mettre pip a jour et installer les dependances
 "%PYVENV%" -m pip install --upgrade pip
 if exist "requirements.txt" (
-"%PYVENV%" -m pip install -r requirements.txt || (echo [ERREUR] Echec pip install -r requirements.txt & exit /b 1)
+    "%PYVENV%" -m pip install -r requirements.txt || (echo [ERREUR] Echec pip install -r requirements.txt & exit /b 1)
 ) else (
-echo [AVERTISSEMENT] requirements.txt introuvable, on continue...
+    echo [AVERTISSEMENT] requirements.txt introuvable, on continue...
 )
 
 REM 4) Fixer Streamlit headless + port
