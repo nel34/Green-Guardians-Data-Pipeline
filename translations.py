@@ -81,6 +81,10 @@ TRANSLATIONS = {
         # New key for showing by zone
         "show_by_zone": "Show by zone",
         "menu_title": "Menu",
+        "cyano_presence_label": "Cyanobacteria presence",
+        "cyano_present_yes": "Present",
+        "cyano_present_no": "Absent",
+        "cyano_cover_correlation_title": "Seagrass cover vs cyanobacteria presence"
     },
     "th": {
         "nav_seagrass": "🌿 ครอบคลุมหญ้าทะเล",
@@ -125,6 +129,7 @@ TRANSLATIONS = {
         "avg_species_by_month_title": "ค่าเฉลี่ยความหลากหลายชนิดตามเดือน",
         "seagrass_cover_comparison_title": "การเปรียบเทียบการคลุมหญ้าทะเลตามโซน ({months} - {years})",
         "percent_cover_y_label": "% การคลุม",
+        "y_percent_cover": "% การคลุม",
         "mapped_surface_title": "พื้นที่หญ้าทะเลที่ถูกทำแผนที่ตามเดือนและปี",
         "mapped_surface_y_label": "พื้นที่ที่ทำแผนที่ (m²)",
         "cyano_chart_title": "หลักฐานไซยาโนแบคทีเรียตามเดือนและปี",
@@ -142,6 +147,12 @@ TRANSLATIONS = {
         "grazing_yes": "มีการกิน",
         "show_by_zone": "แสดงตามโซน",
         "menu_title": "เมนู",
+        "no_drone_data": "ไม่มีข้อมูลการทำแผนที่หญ้าทะเลสำหรับการเลือกปัจจุบัน",
+        "no_dugong_feeding": "ยังไม่มีข้อมูลการทำแผนที่หลักฐานการให้อาหาร Dugong ข้อมูลจะแสดงเมื่อมีการเพิ่ม",
+        "cyano_presence_label": "การมีอยู่ของไซยาโนแบคทีเรีย",
+        "cyano_present_yes": "พบ",
+        "cyano_present_no": "ไม่พบ",
+        "cyano_cover_correlation_title": "การครอบคลุมหญ้าทะเล เทียบกับการมีไซยาโนแบคทีเรีย"
     },
     "fr": {
         "nav_seagrass": "🌿 Couverture des herbiers",
@@ -186,6 +197,7 @@ TRANSLATIONS = {
         "avg_species_by_month_title": "Richesse spécifique moyenne par mois",
         "seagrass_cover_comparison_title": "Comparaison de la couverture par zone ({months} - {years})",
         "percent_cover_y_label": "% Couverture",
+        "y_percent_cover": "% Couverture",
         "mapped_surface_title": "Surface cartographiée des herbiers par mois et année",
         "mapped_surface_y_label": "Surface cartographiée (m²)",
         "cyano_chart_title": "Preuves de cyanobactéries par mois et année",
@@ -202,7 +214,13 @@ TRANSLATIONS = {
         "grazing_no": "Pas de pâturage",
         "grazing_yes": "Avec pâturage",
         "show_by_zone": "Afficher par zone",
-        "menu_title": "Menu"
+        "menu_title": "Menu",
+        "no_drone_data": "Aucune donnée de cartographie disponible pour la sélection actuelle.",
+        "no_dugong_feeding": "Aucune donnée de cartographie des traces d'alimentation Dugong pour l'instant. Le graphique se remplira lorsque des données seront ajoutées.",
+        "cyano_presence_label": "Présence de cyanobactéries",
+        "cyano_present_yes": "Présent",
+        "cyano_present_no": "Absent",
+        "cyano_cover_correlation_title": "Couverture des herbiers vs présence de cyanobactéries"
     }
 }
 

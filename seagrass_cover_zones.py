@@ -4,11 +4,22 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import translations
+import os
+import data_utils
+
 t = translations.t
 
 @st.cache_data
 def load_data():
-    df = pd.read_excel('TRANSECT_DATA_SUMMARY.xlsx', sheet_name='TRANSECT DATA SUMMARY')
+    path = data_utils.find_latest_transect_file(None)
+    if path is None:
+        st.error("No transect Excel file found (looking for 'TRANSECT DATA SUMMARY *.xlsx' in repo root or data/).")
+        return pd.DataFrame()
+    try:
+        df = pd.read_excel(path)
+    except Exception as e:
+        st.error(f"Failed to read transect file {os.path.basename(path)}: {e}")
+        return pd.DataFrame()
     return df
 
 def format_float(val):
