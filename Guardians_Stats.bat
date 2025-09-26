@@ -30,7 +30,8 @@ set "STREAMLIT_SERVER_PORT=8501"
 set "STREAMLIT_SERVER_HEADLESS=true"
 
 REM 5) Lancer Streamlit dans un nouveau shell pour ne pas bloquer le .bat
-start "" cmd /c ""%PYVENV%" -m streamlit run app.py --server.port=%STREAMLIT_SERVER_PORT% --server.headless=true"
+"%PYVENV%" -m streamlit run app.py --server.port=%STREAMLIT_SERVER_PORT% --server.headless=true 1>run.log 2>&1
+cmd /k type run.log
 
 REM 6) Attendre le demarrage puis ouvrir le navigateur UNE seule fois
 timeout /t 3 >nul
