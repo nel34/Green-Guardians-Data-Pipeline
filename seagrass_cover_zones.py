@@ -149,6 +149,57 @@ def main():
                 )
                 st.plotly_chart(fig_bar, use_container_width=True)
 
+            # ---------------------------
+            # Same charts but using MAX SP_RICHNESS per month
+            # ---------------------------
+            mois_stats_max = df_rich_filt.groupby('MONTH').agg(
+                max_val=('SP_RICHNESS', 'max'),
+                std_error=('SP_RICHNESS', lambda x: x.std(ddof=1) / np.sqrt(len(x)) if len(x) > 1 else 0)
+            ).reset_index()
+
+            # line chart for max
+            fig_mois_max = px.line(
+                mois_stats_max,
+                x='MONTH',
+                y='max_val',
+                error_y='std_error',
+                markers=True,
+                labels={"max_val": t("avg_species_y_label"), "MONTH": t("month_x_label")},
+                title=t("avg_species_by_month_title") + " (max)"
+            )
+            fig_mois_max.update_yaxes(tickformat=".2f")
+            fig_mois_max.update_layout(height=420, margin=dict(t=60, b=40, l=60, r=20))
+
+            # small bar chart for max
+            fig_bar_max = px.bar(
+                mois_stats_max,
+                x='MONTH',
+                y='max_val',
+                error_y='std_error',
+                text=mois_stats_max['max_val'].apply(format_float),
+                labels={"max_val": t("avg_species_y_label"), "MONTH": t("month_x_label")},
+                title=t("avg_species_by_month_title") + " (max)",
+                color='max_val',
+                color_continuous_scale='Viridis'
+            )
+            fig_bar_max.update_traces(marker_line_color='black', marker_line_width=1.5, textposition='outside')
+            fig_bar_max.update_layout(
+                yaxis=dict(tickformat=".2f"),
+                xaxis_title=t("month_x_label"),
+                yaxis_title=t("avg_species_y_label"),
+                plot_bgcolor='rgba(245,245,245,1)',
+                bargap=0.3,
+                showlegend=False,
+                height=420,
+                margin=dict(t=110, b=40, l=40, r=20),
+            )
+
+            c5, c6 = st.columns([3,2])
+            with c5:
+                st.plotly_chart(fig_mois_max, use_container_width=True)
+            with c6:
+                st.plotly_chart(fig_bar_max, use_container_width=True)
+
             # Global stat
             st.subheader(t("global_species_richness"))
             global_stats = df_rich_filt["SP_RICHNESS"].agg(['mean', 'std', 'count'])
